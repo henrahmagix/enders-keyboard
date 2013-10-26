@@ -1,0 +1,29 @@
+$blue: #147fe6
+
+$fingerSize: 30px
+
+.finger,
+.slider
+    box-sizing: border-box
+.finger
+    border: 2px solid $blue
+        radius: $fingerSize
+    height: $fingerSize
+    width: $fingerSize
+    position: absolute
+    top: 100px
+
+    .slider
+        border: 2px solid lighten($blue, 10%)
+            radius: $fingerSize
+        text-align: center
+        width: 100%
+        position: absolute
+        top: 0
+        left: 0
+
+    $names: thumb, second, third, fourth, fifth
+    @for $i from 1 through 5
+        $finger: nth($names, $i)
+        &:nth-child(#{$i})
+            left: 70px * $i
