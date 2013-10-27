@@ -108,6 +108,7 @@ $(function () {
             this.pageY = touch.pageY;
             this.top = this.getTop(this.getInitial());
             this.updateCoords(touch);
+            this.trigger('update:char', this.getSelected().toJSON());
         },
         updateCoords: function (touch) {
             var oldY = this.pageY;
@@ -119,6 +120,7 @@ $(function () {
         updateChar: function (model, selected) {
             if (selected) {
                 this.model.set('currentChar', model.get('title'));
+                this.trigger('update:char', model.toJSON());
             }
         },
         renderChar: function (model, char) {
@@ -134,6 +136,7 @@ $(function () {
         reset: function () {
             var initial = this.getInitial();
             initial.set('selected', true);
+            this.trigger('update:char', null);
         },
         getSelected: function () {
             return this.chars.selected;
@@ -189,7 +192,7 @@ $(function () {
 
     var AppView = View.extend({
         el: '#app',
-        template: '<textarea class="input"></textarea>',
+        template: '<textarea class="input"></textarea><div class="info"></div>',
         events: {
             'touchstart': 'action',
             'touchmove': 'action',
@@ -197,6 +200,7 @@ $(function () {
         },
         onReady: function () {
             this.$input = this.$('.input');
+            this.$info = this.$('.info');
             _(fingers).each(this.addFinger, this);
         },
         addFinger: function (finger) {
@@ -209,6 +213,10 @@ $(function () {
                     var char = attrs.value;
                     this.$input.val(currentVal + char);
                 }
+            });
+            this.listenTo(this.views[finger.id], 'update:char', function (attrs) {
+                var title = attrs ? attrs.title : '';
+                this.$info.html(title);
             });
         },
         action: function (event) {

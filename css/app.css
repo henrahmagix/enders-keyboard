@@ -44,3 +44,15 @@ body {
   text-align: center;
   width: 100px;
 }
+
+/* line 41, ../sass/app.sass */
+.info {
+  font-size: 100px;
+  opacity: 0.3;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+}
