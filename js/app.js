@@ -206,6 +206,7 @@ $(function () {
         },
         getCharFromTop: function (top) {
             var step = this.model.get('step');
+            top += step / 2;
             if (top < step) {
                 return this.chars.first();
             }
