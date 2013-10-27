@@ -2,6 +2,24 @@ $(function () {
     _.templateSettings.evaluate = /\{%([\s\S]+?)%\}/g;
     _.templateSettings.interpolate = /\{\{([\s\S]+?)\}\}/g;
 
+    var vendors = ['', 'o', 'ms', 'moz', 'webkit'];
+    var cssPrefixes = _(vendors).map(function (vendor) {
+        if (!vendor.length) {
+            return vendor;
+        }
+        return '-' + vendor + '-';
+    });
+    var vendorStyles = function ($el, cssAttrs) {
+        _(cssAttrs).each(function (value, attr) {
+            var newAttrs = {};
+            _(cssPrefixes).each(function (prefix) {
+                newAttrs[prefix + attr] = value;
+            });
+            console.log(newAttrs);
+            $el.css(newAttrs);
+        });
+    };
+
     var View = Backbone.View.extend({
         initialize: function (options) {
             this.views = {};
@@ -101,7 +119,7 @@ $(function () {
 
     var FingerView = View.extend({
         className: 'finger',
-        template: '<div class="pad"></div><div class="slider"></div><div class="char">{{ currentChar }}</div>',
+        template: '<div class="slider"><div class="pad"></div></div><div class="char">{{ currentChar }}</div>',
         onReady: function () {
             this.$el.attr('id', this.model.id);
             this.chars = this.model.get('charSet');
@@ -120,6 +138,10 @@ $(function () {
             this.$el.height(charSetHeight);
             this.padHeight = this.$pad.height();
             this.$slider.css('top', this.getTop(this.getInitial()) * -1 + this.model.get('step') / 2);
+            this.$el.css('top', this.model.get('top'));
+            this.$el.css('left', this.model.get('left'));
+            vendorStyles(this.$el, {transform: 'rotate(' + this.model.get('angle') + 'deg)'});
+            vendorStyles(this.$char, {transform: 'rotate(' + (this.model.get('angle') * -1) + 'deg)'});
         },
         start: function (touch) {
             this.$el.addClass('hover');
@@ -241,27 +263,42 @@ $(function () {
                 {id: 'return', title: '&crarr;', value: '\n'},
                 {id: 'space', title: '&rarr;', value: ' ', initial: true},
                 {id: 'backspace', title: '&larr;', value: null}
-            ]
+            ],
+            angle: -60,
+            top: 340,
+            left: 110
         },
         {
             id: 'second',
             step: defaultStep,
-            charSet: 'abcdefg'
+            charSet: 'abcdefg',
+            angle: -10,
+            top: 160,
+            left: 270
         },
         {
             id: 'third',
             step: defaultStep,
-            charSet: 'hijklmn'
+            charSet: 'hijklmn',
+            angle: 0,
+            top: 140,
+            left: 410
         },
         {
             id: 'fourth',
             step: defaultStep,
-            charSet: 'opqrst'
+            charSet: 'opqrst',
+            angle: 5,
+            top: 140,
+            left: 550
         },
         {
             id: 'fifth',
             step: defaultStep,
-            charSet: 'uvwxyz'
+            charSet: 'uvwxyz',
+            angle: 30,
+            top: 210,
+            left: 680
         }
     ];
 
