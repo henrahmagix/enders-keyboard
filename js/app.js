@@ -77,8 +77,14 @@ $(function () {
             }
             return chars;
         },
+        getInitial: function () {
+            return this.findWhere({initial: true});
+        },
         setInitial: function () {
-            this.findWhere({initial: true}).set('selected', true);
+            this.getInitial().set('selected', true);
+        },
+        getSelected: function () {
+            return this.selected;
         }
     });
 
@@ -95,32 +101,47 @@ $(function () {
 
     var FingerView = View.extend({
         className: 'finger',
-        template: '<div class="char">{{ currentChar }}</div>',
+        template: '<div class="pad"></div><div class="slider"></div><div class="char">{{ currentChar }}</div>',
         onReady: function () {
             this.$el.attr('id', this.model.id);
-            this.$char = this.$('.char');
             this.chars = this.model.get('charSet');
+            this.$char = this.$('.char');
+            this.$slider = this.$('.slider');
+            this.$pad = this.$('.pad');
             this.listenTo(this.chars, 'change:selected', this.updateChar);
             this.listenTo(this.model, 'change:currentChar', this.renderChar);
             this.chars.setInitial();
         },
+        onLoad: function () {
+            this.height = this.$el.height();
+            this.width = this.$el.width();
+            var charSetHeight = this.model.get('step') * this.chars.length + this.height;
+            this.$slider.height(charSetHeight);
+            this.$el.height(charSetHeight);
+            this.padHeight = this.$pad.height();
+            this.$slider.css('top', this.getTop(this.getInitial()) * -1 + this.model.get('step') / 2);
+        },
         start: function (touch) {
-            this.pageY = touch.pageY;
+            this.$el.addClass('hover');
+            this.startY = touch.pageY;
+            this.pageY = this.startY;
             this.top = this.getTop(this.getInitial());
             this.updateCoords(touch);
-            this.trigger('update:char', this.getSelected().toJSON());
         },
         updateCoords: function (touch) {
             var oldY = this.pageY;
             this.pageY = touch.pageY;
             this.distY = this.pageY - oldY;
             this.top += this.distY;
-            this.getCharFromTop(this.top).set('selected', true);
+            this.$pad.css('top', this.pageY - this.startY);
+            var newChar = this.getCharFromTop(this.top);
+            if (newChar !== this.getSelected()) {
+                newChar.set('selected', true);
+            }
         },
         updateChar: function (model, selected) {
             if (selected) {
                 this.model.set('currentChar', model.get('title'));
-                this.trigger('update:char', model.toJSON());
             }
         },
         renderChar: function (model, char) {
@@ -130,23 +151,23 @@ $(function () {
             this.updateCoords(touch);
         },
         end: function () {
+            this.$el.removeClass('hover');
             this.trigger('select:char', this.getSelected().toJSON());
             this.reset();
         },
         reset: function () {
             var initial = this.getInitial();
             initial.set('selected', true);
-            this.trigger('update:char', null);
+            this.$pad.css('top', 0);
         },
         getSelected: function () {
-            return this.chars.selected;
+            return this.chars.getSelected();
         },
         getInitial: function () {
-            return this.chars.findWhere({initial: true});
+            return this.chars.getInitial();
         },
         getCharFromTop: function (top) {
             var step = this.model.get('step');
-            top += step / 2;
             if (top < step) {
                 return this.chars.first();
             }
@@ -154,69 +175,37 @@ $(function () {
             return this.chars.at(index) || this.chars.last();
         },
         getTop: function (char) {
-            return this.model.get('step') * char.collection.indexOf(char);
+            var step = this.model.get('step');
+            return step * char.collection.indexOf(char) + step / 2;
         }
     });
 
-    var fingers = [
-        {
-            id: 'thumb',
-            step: 30,
-            charSet: [
-                {id: 'return', title: '&crarr;', value: '\n'},
-                {id: 'space', title: '&rarr;', value: ' ', initial: true},
-                {id: 'backspace', title: '&larr;', value: null}
-            ]
-        },
-        {
-            id: 'second',
-            step: 30,
-            charSet: 'abcdefg'
-        },
-        {
-            id: 'third',
-            step: 30,
-            charSet: 'hijklmn'
-        },
-        {
-            id: 'fourth',
-            step: 30,
-            charSet: 'opqrst'
-        },
-        {
-            id: 'fifth',
-            step: 30,
-            charSet: 'uvwxyz'
-        }
-    ];
-
     var AppView = View.extend({
         el: '#app',
-        template: '<textarea class="input"></textarea><div class="info"></div>',
+        template: '<div class="display"></div>',
         events: {
             'touchstart': 'action',
             'touchmove': 'action',
             'touchend': 'action'
         },
+        initialize: function (options) {
+            View.prototype.initialize.apply(this, arguments);
+            _.extend(this, options);
+        },
         onReady: function () {
-            this.$input = this.$('.input');
-            this.$info = this.$('.info');
-            _(fingers).each(this.addFinger, this);
+            this.$input = this.$('.display');
+            _(this.fingers).each(this.addFinger, this);
         },
         addFinger: function (finger) {
             this.addView(FingerView, finger.id, 'append', {model: new Finger(finger)});
             this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
-                var currentVal = this.$input.val();
+                var input = this.$input.text();
                 if (attrs.id === 'backspace') {
-                    this.$input.val(currentVal.slice(0, -1));
+                    this.$input.text(input.slice(0, -1));
                 } else {
                     var char = attrs.value;
-                    this.$input.val(currentVal + char);
+                    this.$input.text(input + char);
                 }
-            });
-            this.listenTo(this.views[finger.id], 'update:char', function (attrs) {
-                var title = attrs ? attrs.title : '';
-                this.$info.html(title);
             });
         },
         action: function (event) {
@@ -242,5 +231,39 @@ $(function () {
         }
     });
 
-    var app = new AppView().render();
+    var defaultStep = 40;
+
+    var fingers = [
+        {
+            id: 'thumb',
+            step: defaultStep,
+            charSet: [
+                {id: 'return', title: '&crarr;', value: '\n'},
+                {id: 'space', title: '&rarr;', value: ' ', initial: true},
+                {id: 'backspace', title: '&larr;', value: null}
+            ]
+        },
+        {
+            id: 'second',
+            step: defaultStep,
+            charSet: 'abcdefg'
+        },
+        {
+            id: 'third',
+            step: defaultStep,
+            charSet: 'hijklmn'
+        },
+        {
+            id: 'fourth',
+            step: defaultStep,
+            charSet: 'opqrst'
+        },
+        {
+            id: 'fifth',
+            step: defaultStep,
+            charSet: 'uvwxyz'
+        }
+    ];
+
+    var app = new AppView({fingers: fingers}).render();
 });

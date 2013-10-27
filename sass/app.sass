@@ -1,42 +1,84 @@
-$blue: #147fe6
+$blue: hsl(209.4, 84, 49)
+$black: hsl(0, 0, 10)
+$white: hsl(65, 40, 90)
+
+$bg: $black
+$fg: $white
+$hoverbg: transparentize($fg, 0.7)
+$sliderbg: $fg
 
 $fingerSize: 100px
 $charSize: $fingerSize / 2
 $inputCharSize: $charSize / 2
 $pad: $fingerSize / 4
 
+$sliderWidth: 2px
+$animSpeed: 30ms
+
+@import compass/css3
+
+*
+    @include box-sizing(border-box)
+
 body
+    background-color: $bg
+    color: $fg
     margin: 0
     padding: $pad
 
 #app
     position: relative
 
-.finger,
-.slider
-    box-sizing: border-box
+.display
+    font-size: $inputCharSize
+    position: absolute
+    top: 0
+    left: 0
+    height: 100%
+    width: 100%
+    white-space: pre
 
 .finger,
-.char
-    height: $fingerSize
+.pad
+    height: $fingerSize * 1.2
+    width: $fingerSize
+
+.finger
+    display: inline-block
+    position: relative
+    margin:
+        top: 100px
+        right: $fingerSize / 2
+    vertical-align: top
+
+.pad
+    border: 2px solid $fg
+        radius: $fingerSize
+    position: absolute
+    top: 0
+    left: 0
+    .finger.hover &
+        background-color: $hoverbg
+
+.slider
+    background-color: $sliderbg
+    margin: auto
+    opacity: 0
+    position: absolute
+    top: 0
+    left: 50%
+    margin-left: -$sliderWidth / 2
+    height: 100%
+    width: $sliderWidth
+    .finger.hover &
+        opacity: 1
 
 .char
     font-size: $charSize
-
-.input
-    font-size: $inputCharSize
-    margin-bottom: $pad
-    height: 170px
+    position: absolute
+    bottom: 100%
+    margin-bottom: 5px
     width: 100%
-
-.finger
-    border: 2px solid $blue
-        radius: $fingerSize
-    display: inline-block
-    margin-right: $fingerSize / 2
-    position: relative
-    text-align: center
-    width: $fingerSize
 
 .info
     font-size: $fingerSize

@@ -1,51 +1,90 @@
-/* line 8, ../sass/app.sass */
+/* line 20, ../sass/app.sass */
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* line 23, ../sass/app.sass */
 body {
+  background-color: #1a1a1a;
+  color: #eef0db;
   margin: 0;
   padding: 25px;
 }
 
-/* line 12, ../sass/app.sass */
+/* line 29, ../sass/app.sass */
 #app {
   position: relative;
 }
 
-/* line 15, ../sass/app.sass */
-.finger,
-.slider {
-  box-sizing: border-box;
-}
-
-/* line 19, ../sass/app.sass */
-.finger,
-.char {
-  height: 100px;
-}
-
-/* line 23, ../sass/app.sass */
-.char {
-  font-size: 50px;
-}
-
-/* line 26, ../sass/app.sass */
-.input {
-  font-size: 25px;
-  margin-bottom: 25px;
-  height: 170px;
-  width: 100%;
-}
-
 /* line 32, ../sass/app.sass */
-.finger {
-  border: 2px solid #147fe6;
-  border-radius: 100px;
-  display: inline-block;
-  margin-right: 50px;
-  position: relative;
-  text-align: center;
-  width: 100px;
+.display {
+  font-size: 25px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  white-space: pre;
 }
 
 /* line 41, ../sass/app.sass */
+.finger,
+.pad {
+  height: 120px;
+  width: 100px;
+}
+
+/* line 46, ../sass/app.sass */
+.finger {
+  display: inline-block;
+  position: relative;
+  margin-top: 100px;
+  margin-right: 50px;
+  vertical-align: top;
+}
+
+/* line 54, ../sass/app.sass */
+.pad {
+  border: 2px solid #eef0db;
+  border-radius: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* line 60, ../sass/app.sass */
+.finger.hover .pad {
+  background-color: rgba(238, 240, 219, 0.3);
+}
+
+/* line 63, ../sass/app.sass */
+.slider {
+  background-color: #eef0db;
+  margin: auto;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -1px;
+  height: 100%;
+  width: 2px;
+}
+/* line 73, ../sass/app.sass */
+.finger.hover .slider {
+  opacity: 1;
+}
+
+/* line 76, ../sass/app.sass */
+.char {
+  font-size: 50px;
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+/* line 83, ../sass/app.sass */
 .info {
   font-size: 100px;
   opacity: 0.3;
