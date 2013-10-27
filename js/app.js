@@ -161,7 +161,7 @@ $(function () {
     var fingers = [
         {
             id: 'thumb',
-            step: 20,
+            step: 30,
             charSet: [
                 {id: 'return', title: '&crarr;', value: '\n'},
                 {id: 'space', title: '&rarr;', value: ' ', initial: true},
@@ -170,22 +170,22 @@ $(function () {
         },
         {
             id: 'second',
-            step: 20,
+            step: 30,
             charSet: 'abcdefg'
         },
         {
             id: 'third',
-            step: 20,
+            step: 30,
             charSet: 'hijklmn'
         },
         {
             id: 'fourth',
-            step: 20,
+            step: 30,
             charSet: 'opqrst'
         },
         {
             id: 'fifth',
-            step: 20,
+            step: 30,
             charSet: 'uvwxyz'
         }
     ];
