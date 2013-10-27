@@ -95,29 +95,14 @@ $(function () {
 
     var FingerView = View.extend({
         className: 'finger',
-        events: {
-            'touchstart': 'action',
-            'touchmove': 'action',
-            'touchend': 'action'
-        },
         template: '<div class="char">{{ currentChar }}</div>',
         onReady: function () {
-            this.$el.addClass(this.model.id);
+            this.$el.attr('id', this.model.id);
             this.$char = this.$('.char');
             this.chars = this.model.get('charSet');
             this.listenTo(this.chars, 'change:selected', this.updateChar);
             this.listenTo(this.model, 'change:currentChar', this.renderChar);
             this.chars.setInitial();
-        },
-        action: function (event) {
-            event.preventDefault();
-            var method = event.type.replace('touch', '');
-            var touches = event.touches || event.originalEvent.touches;
-            if (touches.length) {
-                _(touches).each(this[method], this);
-            } else {
-                this[method]();
-            }
         },
         start: function (touch) {
             this.pageY = touch.pageY;
@@ -205,6 +190,11 @@ $(function () {
     var AppView = View.extend({
         el: '#app',
         template: '<textarea class="input"></textarea>',
+        events: {
+            'touchstart': 'action',
+            'touchmove': 'action',
+            'touchend': 'action'
+        },
         onReady: function () {
             this.$input = this.$('.input');
             _(fingers).each(this.addFinger, this);
@@ -216,10 +206,31 @@ $(function () {
                 if (attrs.id === 'backspace') {
                     this.$input.val(currentVal.slice(0, -1));
                 } else {
-                    var char = attrs.title || attrs.value;
+                    var char = attrs.value;
                     this.$input.val(currentVal + char);
                 }
             });
+        },
+        action: function (event) {
+            event.preventDefault();
+            var method = event.type.replace('touch', '');
+            var touches = event.touches || event.originalEvent.touches;
+            if (touches.length) {
+                _(touches).each(function (touch) {
+                    if (touch.target !== this.el) {
+                        var finger = this.getFingerFromTarget(touch.target);
+                        finger[method].call(finger, touch);
+                    }
+                }, this);
+            } else {
+                var finger = this.getFingerFromTarget(event.target);
+                finger[method].call(finger);
+            }
+        },
+        getFingerFromTarget: function (target) {
+            var $el = $(target);
+            var fingerID = $el.closest('.finger').attr('id');
+            return this.views[fingerID];
         }
     });
 
