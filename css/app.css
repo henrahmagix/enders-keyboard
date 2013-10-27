@@ -1,62 +1,46 @@
-/* line 7, ../sass/app.sass */
+/* line 8, ../sass/app.sass */
+body {
+  margin: 0;
+  padding: 25px;
+}
+
+/* line 12, ../sass/app.sass */
+#app {
+  position: relative;
+}
+
+/* line 15, ../sass/app.sass */
 .finger,
 .slider {
   box-sizing: border-box;
 }
 
-/* line 11, ../sass/app.sass */
+/* line 19, ../sass/app.sass */
 .finger,
 .char {
   height: 100px;
 }
 
-/* line 15, ../sass/app.sass */
+/* line 23, ../sass/app.sass */
 .char {
   font-size: 50px;
 }
 
-/* line 18, ../sass/app.sass */
+/* line 26, ../sass/app.sass */
+.input {
+  font-size: 25px;
+  margin-bottom: 25px;
+  height: 170px;
+  width: 100%;
+}
+
+/* line 32, ../sass/app.sass */
 .finger {
   border: 2px solid #147fe6;
   border-radius: 100px;
+  display: inline-block;
+  margin-right: 50px;
+  position: relative;
   text-align: center;
   width: 100px;
-  position: absolute;
-  top: 200px;
-}
-/* line 26, ../sass/app.sass */
-.finger .slider {
-  border: 2px solid #3f98ee;
-  border-radius: 100px;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-/* line 37, ../sass/app.sass */
-.finger:nth-child(1) {
-  left: 150px;
-}
-/* line 37, ../sass/app.sass */
-.finger:nth-child(2) {
-  left: 300px;
-}
-/* line 37, ../sass/app.sass */
-.finger:nth-child(3) {
-  left: 450px;
-}
-/* line 37, ../sass/app.sass */
-.finger:nth-child(4) {
-  left: 600px;
-}
-/* line 37, ../sass/app.sass */
-.finger:nth-child(5) {
-  left: 750px;
-}
-
-/* line 40, ../sass/app.sass */
-.input {
-  font-size: 25px;
-  height: 170px;
-  width: 100%;
 }

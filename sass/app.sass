@@ -3,6 +3,14 @@ $blue: #147fe6
 $fingerSize: 100px
 $charSize: $fingerSize / 2
 $inputCharSize: $charSize / 2
+$pad: $fingerSize / 4
+
+body
+    margin: 0
+    padding: $pad
+
+#app
+    position: relative
 
 .finger,
 .slider
@@ -15,29 +23,17 @@ $inputCharSize: $charSize / 2
 .char
     font-size: $charSize
 
+.input
+    font-size: $inputCharSize
+    margin-bottom: $pad
+    height: 170px
+    width: 100%
+
 .finger
     border: 2px solid $blue
         radius: $fingerSize
+    display: inline-block
+    margin-right: $fingerSize / 2
+    position: relative
     text-align: center
     width: $fingerSize
-    position: absolute
-    top: 200px
-
-    .slider
-        border: 2px solid lighten($blue, 10%)
-            radius: $fingerSize
-        width: 100%
-        position: absolute
-        top: 0
-        left: 0
-
-    $names: thumb, second, third, fourth, fifth
-    @for $i from 1 through 5
-        $finger: nth($names, $i)
-        &:nth-child(#{$i})
-            left: 150px * $i
-
-.input
-    font-size: $inputCharSize
-    height: 170px
-    width: 100%

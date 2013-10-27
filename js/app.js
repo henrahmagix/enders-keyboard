@@ -55,6 +55,8 @@ $(function () {
         model: Character,
         initialize: function () {
             this.on('change:selected', function (model, selected) {
+                // Save the selected model as an easily-accessible attribute,
+                // and ensure only one is selected at a time.
                 if (selected) {
                     if (this.selected && this.selected !== model) {
                         this.selected.set('selected', false);
@@ -70,11 +72,7 @@ $(function () {
         parse: function (chars) {
             if (_(chars).isString()) {
                 return _(chars).map(function (char, index) {
-                    return {
-                        id: char,
-                        value: char,
-                        initial: index === 2
-                    };
+                    return {id: char, title: char, value: char, initial: index === 2};
                 });
             }
             return chars;
@@ -84,52 +82,9 @@ $(function () {
         }
     });
 
-    var CharacterView = View.extend({
-        className: 'char',
-        template: '{{ value }}',
-        initialize: function () {
-            View.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change', this.render);
-        },
-        onReady: function () {
-            if (this.model.get('initial')) {
-                this.$el.addClass('initial');
-            }
-            if (this.model.get('selected')) {
-                this.$el.addClass('selected');
-            }
-        }
-    });
-
-    // var SliderView = View.extend({
-    //     className: 'slider',
-    //     events: {
-    //     },
-    //     initialize: function (collection) {
-    //         View.prototype.initialize.apply(this, arguments);
-    //         this.collection = collection;
-    //         this.collection.each(this.addChar, this);
-    //         this.listenTo(this.collection, 'change:selected', function (model, selected, collection) {
-    //             if (selected) {
-    //                 if (collection.selected && collection.selected !== model) {
-    //                     collection.selected.set('selected', false);
-    //                 }
-    //                 collection.selected = model;
-    //             } else {
-    //                 if (collection.selected && collection.selected === model) {
-    //                     delete collection.selected;
-    //                 }
-    //             }
-    //         });
-    //     },
-    //     addChar: function (char) {
-    //         this.addView(CharacterView, char.id, 'append', {model: char});
-    //     }
-    // });
-
     var Finger = Backbone.Model.extend({
         defaults: {
-            char: ''
+            currentChar: ''
         },
         initialize: function (options) {
             if (options.charSet) {
@@ -145,16 +100,13 @@ $(function () {
             'touchmove': 'action',
             'touchend': 'action'
         },
-        template: '<div class="char">{{ char }}</div>',
+        template: '<div class="char">{{ currentChar }}</div>',
         onReady: function () {
             this.$el.addClass(this.model.id);
-            // this.addView(SliderView, 'slider', 'append', this.model.get('charSet'));
-            // this.$slider = this.views.slider.$el;
-            // this.$slider.hide();
             this.$char = this.$('.char');
             this.chars = this.model.get('charSet');
             this.listenTo(this.chars, 'change:selected', this.updateChar);
-            this.listenTo(this.model, 'change:char', this.renderChar);
+            this.listenTo(this.model, 'change:currentChar', this.renderChar);
             this.chars.setInitial();
         },
         action: function (event) {
@@ -175,13 +127,13 @@ $(function () {
         updateCoords: function (touch) {
             var oldY = this.pageY;
             this.pageY = touch.pageY;
-            this.distY = oldY - this.pageY;
+            this.distY = this.pageY - oldY;
             this.top += this.distY;
             this.getCharFromTop(this.top).set('selected', true);
         },
         updateChar: function (model, selected) {
             if (selected) {
-                this.model.set('char', model.get('value'));
+                this.model.set('currentChar', model.get('title'));
             }
         },
         renderChar: function (model, char) {
@@ -191,7 +143,7 @@ $(function () {
             this.updateCoords(touch);
         },
         end: function () {
-            this.trigger('char:select', this.chars.selected.toJSON());
+            this.trigger('select:char', this.getSelected().toJSON());
             this.reset();
         },
         reset: function () {
@@ -223,9 +175,9 @@ $(function () {
             id: 'thumb',
             step: 20,
             charSet: [
-                {id: 'return', value: '&crarr;', char: '\n'},
-                {id: 'space', value: '&rarr;', char: ' ', initial: true},
-                {id: 'backspace', value: '&larr;'},
+                {id: 'return', title: '&crarr;', value: '\n'},
+                {id: 'space', title: '&rarr;', value: ' ', initial: true},
+                {id: 'backspace', title: '&larr;', value: null}
             ]
         },
         {
@@ -252,19 +204,19 @@ $(function () {
 
     var AppView = View.extend({
         el: '#app',
+        template: '<textarea class="input"></textarea>',
         onReady: function () {
-            _(fingers).each(this.addFinger, this);
-            this.$el.append('<textarea class="input"></textarea>');
             this.$input = this.$('.input');
+            _(fingers).each(this.addFinger, this);
         },
         addFinger: function (finger) {
             this.addView(FingerView, finger.id, 'append', {model: new Finger(finger)});
-            this.listenTo(this.views[finger.id], 'char:select', function (model) {
+            this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
                 var currentVal = this.$input.val();
-                if (model.id === 'backspace') {
+                if (attrs.id === 'backspace') {
                     this.$input.val(currentVal.slice(0, -1));
                 } else {
-                    var char = model.char || model.value;
+                    var char = attrs.title || attrs.value;
                     this.$input.val(currentVal + char);
                 }
             });
