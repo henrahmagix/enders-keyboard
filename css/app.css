@@ -1,50 +1,61 @@
-/* line 5, ../sass/app.sass */
+/* line 6, ../sass/app.sass */
 .finger,
 .slider {
   box-sizing: border-box;
 }
 
-/* line 9, ../sass/app.sass */
+/* line 10, ../sass/app.sass */
 .finger,
 .char {
-  height: 30px;
+  height: 100px;
 }
 
-/* line 13, ../sass/app.sass */
+/* line 14, ../sass/app.sass */
+.char {
+  font-size: 50px;
+}
+
+/* line 17, ../sass/app.sass */
 .finger {
   border: 2px solid #147fe6;
-  border-radius: 30px;
-  width: 30px;
+  border-radius: 100px;
+  text-align: center;
+  width: 100px;
   position: absolute;
-  top: 100px;
+  top: 200px;
 }
-/* line 20, ../sass/app.sass */
+/* line 25, ../sass/app.sass */
 .finger .slider {
   border: 2px solid #3f98ee;
-  border-radius: 30px;
-  text-align: center;
+  border-radius: 100px;
   width: 100%;
   position: absolute;
   top: 0;
   left: 0;
 }
-/* line 32, ../sass/app.sass */
+/* line 36, ../sass/app.sass */
 .finger:nth-child(1) {
-  left: 70px;
+  left: 150px;
 }
-/* line 32, ../sass/app.sass */
+/* line 36, ../sass/app.sass */
 .finger:nth-child(2) {
-  left: 140px;
+  left: 300px;
 }
-/* line 32, ../sass/app.sass */
+/* line 36, ../sass/app.sass */
 .finger:nth-child(3) {
-  left: 210px;
+  left: 450px;
 }
-/* line 32, ../sass/app.sass */
+/* line 36, ../sass/app.sass */
 .finger:nth-child(4) {
-  left: 280px;
+  left: 600px;
 }
-/* line 32, ../sass/app.sass */
+/* line 36, ../sass/app.sass */
 .finger:nth-child(5) {
-  left: 350px;
+  left: 750px;
+}
+
+/* line 39, ../sass/app.sass */
+.input {
+  height: 170px;
+  width: 100%;
 }

@@ -1,6 +1,7 @@
 $blue: #147fe6
 
-$fingerSize: 30px
+$fingerSize: 100px
+$charSize: $fingerSize / 2
 
 .finger,
 .slider
@@ -10,17 +11,20 @@ $fingerSize: 30px
 .char
     height: $fingerSize
 
+.char
+    font-size: $charSize
+
 .finger
     border: 2px solid $blue
         radius: $fingerSize
+    text-align: center
     width: $fingerSize
     position: absolute
-    top: 100px
+    top: 200px
 
     .slider
         border: 2px solid lighten($blue, 10%)
             radius: $fingerSize
-        text-align: center
         width: 100%
         position: absolute
         top: 0
@@ -30,4 +34,8 @@ $fingerSize: 30px
     @for $i from 1 through 5
         $finger: nth($names, $i)
         &:nth-child(#{$i})
-            left: 70px * $i
+            left: 150px * $i
+
+.input
+    height: 170px
+    width: 100%
