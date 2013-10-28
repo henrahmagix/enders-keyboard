@@ -1,7 +1,10 @@
-$(function () {
+(function (_, $, Backbone) {
+
+    // Underscore settings.
     _.templateSettings.evaluate = /\{%([\s\S]+?)%\}/g;
     _.templateSettings.interpolate = /\{\{([\s\S]+?)\}\}/g;
 
+    // Cross-browser helpers.
     var vendors = ['', 'o', 'ms', 'moz', 'webkit'];
     var cssPrefixes = _(vendors).map(function (vendor) {
         if (!vendor.length) {
@@ -19,6 +22,7 @@ $(function () {
         });
     };
 
+    // Base view. All views extend from this.
     var View = Backbone.View.extend({
         initialize: function (options) {
             this.views = {};
@@ -61,13 +65,13 @@ $(function () {
         }
     });
 
+    // Character data. Controls the sets of characters and their selected state.
     var Character = Backbone.Model.extend({
         defaults: {
             initial: false,
             selected: false
         }
     });
-
     var CharacterSet = Backbone.Collection.extend({
         model: Character,
         initialize: function () {
@@ -88,6 +92,7 @@ $(function () {
         },
         parse: function (chars) {
             if (_(chars).isString()) {
+                // Parse a convenience string of characters.
                 return _(chars).map(function (char, index) {
                     return {id: char, title: char, value: char, initial: index === 2};
                 });
@@ -105,6 +110,7 @@ $(function () {
         }
     });
 
+    // Finger data. Controls the current selected character of a finger.
     var Finger = Backbone.Model.extend({
         defaults: {
             currentChar: ''
@@ -116,32 +122,44 @@ $(function () {
         }
     });
 
+    // Finger view. Positions itself, moves a pad along an axis, shows the
+    // current character for selection, and returns that character on touchend.
     var FingerView = View.extend({
         className: 'finger',
         template: '<div class="slider"><div class="pad js-touch-capture" data-finger-id="{{ id }}"></div></div><div class="char">{{ currentChar }}</div>',
+        // Run when rendered.
         onReady: function () {
             this.$el.attr('id', this.model.id);
+            // Convenience properties for easier access and one-time computation.
             this.chars = this.model.get('charSet');
-            this.$char = this.$('.char');
             this.$slider = this.$('.slider');
             this.$pad = this.$('.pad');
+            this.$char = this.$('.char');
             this.listenTo(this.chars, 'change:selected', this.updateChar);
             this.listenTo(this.model, 'change:currentChar', this.renderChar);
+            // Select the initial character.
             this.chars.setInitial();
         },
+        // Run when attached to the DOM.
         onLoad: function () {
+            // Cache $ calls.
             this.height = this.$el.height();
             this.width = this.$el.width();
-            var charSetHeight = this.model.get('step') * this.chars.length + this.height;
+            this.padHeight = this.$pad.height();
+            // Set the slider height based on number of characters in this set.
+            var step = this.model.get('step');
+            var charSetHeight = step * this.chars.length + this.height;
             this.$slider.height(charSetHeight);
             this.$el.height(charSetHeight);
-            this.padHeight = this.$pad.height();
-            this.$slider.css('top', this.getTop(this.getInitial()) * -1 + this.model.get('step') / 2);
+            // Position the slider based on the initial character.
+            this.$slider.css('top', this.getTop(this.getInitial()) * -1 + step / 2);
+            // Position the finger based on model data.
             this.$el.css('top', this.model.get('top'));
             this.$el.css('left', this.model.get('left'));
             vendorStyles(this.$el, {transform: 'rotate(' + this.model.get('angle') + 'deg)'});
             vendorStyles(this.$char, {transform: 'rotate(' + (this.model.get('angle') * -1) + 'deg)'});
         },
+        // Touch methods.
         touchstart: function (touch) {
             this.$el.addClass('hover');
             this.startY = touch.pageY;
@@ -150,23 +168,19 @@ $(function () {
             this.updateCoords(touch);
         },
         updateCoords: function (touch) {
+            // Update position.
             var oldY = this.pageY;
-            this.pageY = touch.pageY;
-            this.distY = this.pageY - oldY;
-            this.top += this.distY;
-            this.$pad.css('top', this.pageY - this.startY);
+            var newY = touch.pageY;
+            this.pageY = newY;
+            // Increment/decrement top value.
+            this.top += newY - oldY;
+            // Move pad to new position.
+            this.$pad.css('top', newY - this.startY);
+            // If there's a new character to be selected, select it.
             var newChar = this.getCharFromTop(this.top);
             if (newChar !== this.getSelected()) {
                 newChar.set('selected', true);
             }
-        },
-        updateChar: function (model, selected) {
-            if (selected) {
-                this.model.set('currentChar', model.get('title'));
-            }
-        },
-        renderChar: function (model, char) {
-            this.$char.html(char);
         },
         touchmove: function (touch) {
             this.updateCoords(touch);
@@ -180,6 +194,15 @@ $(function () {
             var initial = this.getInitial();
             initial.set('selected', true);
             this.$pad.css('top', 0);
+        },
+        // Character methods.
+        updateChar: function (model, selected) {
+            if (selected) {
+                this.model.set('currentChar', model.get('title'));
+            }
+        },
+        renderChar: function (model, char) {
+            this.$char.html(char);
         },
         getSelected: function () {
             return this.chars.getSelected();
@@ -241,24 +264,30 @@ $(function () {
                 _(touches).each(function (touch) {
                     var finger = this.getFingerViewFromTouch(touch, method, event);
                     if (finger) {
+                        // If a view is available, call the touch method on it.
                         finger[method].call(finger, touch);
                     }
                     if (method === 'touchend') {
+                        // Delete this touch from the tracker as it ends.
                         delete this.touchTracker[touch.identifier];
                     }
                 }, this);
             } else {
+                // Reset the tracker when there aren't any touches.
                 this.touchTracker = {};
             }
         },
         getFingerViewFromTouch: function (touch, type, event) {
             var fingerView;
             if (type === 'touchstart') {
+                // Get the view of the finger we're touching.
                 var $el = $(event.currentTarget);
                 var fingerID = $el.data('finger-id');
                 fingerView = this.views[fingerID];
+                // Save it to the tracker so we don't have to find it again.
                 this.touchTracker[touch.identifier] = fingerView;
             } else {
+                // For all other touch events, get the view from the tracker.
                 fingerView = this.touchTracker[touch.identifier];
             }
             return fingerView;
@@ -268,8 +297,8 @@ $(function () {
         }
     });
 
+    // Setup the default finger data.
     var defaultStep = 40;
-
     var fingers = [
         {
             id: 'thumb',
@@ -317,5 +346,9 @@ $(function () {
         }
     ];
 
-    var app = new AppView({fingers: fingers}).render();
-});
+    $(function () {
+        // When the DOM is ready, run the app.
+        var app = new AppView({fingers: fingers}).render();
+    });
+
+})(window._, window.$, window.Backbone);
