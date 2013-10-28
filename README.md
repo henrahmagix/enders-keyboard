@@ -4,17 +4,17 @@ The one-handed keyboard used by Ender in Ender's Game the movie.
 
 ## Instructions
 
-Touch to start character selection. Slide along the axis to select a character. Release to type the current character. Thus a quick tap will type the default character.
+Touch to start character selection. Slide along the axis to select a character. Release to type the character. Thus a quick tap will type the default character.
 
 ### Character sets
 
-From top to bottom. The default character is the one the slider starts on. On the fingers you can slide up two characters, and slide down for the rest.
+From top to bottom. The default character is the one the slider starts on. On the fingers you can slide up two characters and down for the rest.
 
 #### Thumb
 
-- Enter
-- Space (default)
-- Backspace
+- **Enter**
+- **Space** (default)
+- **Backspace**
 
 #### Index
 
