@@ -204,7 +204,7 @@ $(function () {
 
     var AppView = View.extend({
         el: '#app',
-        template: '<div class="display"></div>',
+        template: '<div class="display"><span class="content">&nbsp;</span><span class="cursor">|</span></div>',
         events: {
             'touchstart': 'action',
             'touchmove': 'action',
@@ -215,18 +215,18 @@ $(function () {
             _.extend(this, options);
         },
         onReady: function () {
-            this.$input = this.$('.display');
+            this.$input = this.$('.display .content');
             _(this.fingers).each(this.addFinger, this);
         },
         addFinger: function (finger) {
             this.addView(FingerView, finger.id, 'append', {model: new Finger(finger)});
             this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
-                var input = this.$input.text();
+                var input = this.$input.html();
                 if (attrs.id === 'backspace') {
-                    this.$input.text(input.slice(0, -1));
+                    this.$input.html(input.slice(0, -1));
                 } else {
                     var char = attrs.value;
-                    this.$input.text(input + char);
+                    this.$input.html(input + char);
                 }
             });
         },
@@ -260,7 +260,7 @@ $(function () {
             id: 'thumb',
             step: defaultStep,
             charSet: [
-                {id: 'return', title: '&crarr;', value: '\n'},
+                {id: 'return', title: '&crarr;', value: '<br> '},
                 {id: 'space', title: '&rarr;', value: ' ', initial: true},
                 {id: 'backspace', title: '&larr;', value: null}
             ],

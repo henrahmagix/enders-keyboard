@@ -1,11 +1,74 @@
 /* line 21, ../sass/app.sass */
 * {
-  -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
-/* line 24, ../sass/app.sass */
+@-moz-keyframes blink {
+  /* line 25, ../sass/app.sass */
+  0% {
+    opacity: 0;
+  }
+
+  /* line 27, ../sass/app.sass */
+  50% {
+    opacity: 0;
+  }
+
+  /* line 29, ../sass/app.sass */
+  51% {
+    opacity: 1;
+  }
+
+  /* line 31, ../sass/app.sass */
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes blink {
+  /* line 25, ../sass/app.sass */
+  0% {
+    opacity: 0;
+  }
+
+  /* line 27, ../sass/app.sass */
+  50% {
+    opacity: 0;
+  }
+
+  /* line 29, ../sass/app.sass */
+  51% {
+    opacity: 1;
+  }
+
+  /* line 31, ../sass/app.sass */
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes blink {
+  /* line 25, ../sass/app.sass */
+  0% {
+    opacity: 0;
+  }
+
+  /* line 27, ../sass/app.sass */
+  50% {
+    opacity: 0;
+  }
+
+  /* line 29, ../sass/app.sass */
+  51% {
+    opacity: 1;
+  }
+
+  /* line 31, ../sass/app.sass */
+  100% {
+    opacity: 1;
+  }
+}
+/* line 34, ../sass/app.sass */
 body {
   background-color: #1a1a1a;
   color: #eef0db;
@@ -13,45 +76,49 @@ body {
   padding: 25px;
 }
 
-/* line 30, ../sass/app.sass */
+/* line 40, ../sass/app.sass */
 #app {
   position: relative;
 }
 
-/* line 33, ../sass/app.sass */
+/* line 43, ../sass/app.sass */
 .display {
   font-size: 25px;
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
   white-space: pre;
 }
+/* line 50, ../sass/app.sass */
+.display .cursor {
+  -moz-animation: blink 1s infinite;
+  -webkit-animation: blink 1s infinite;
+  animation: blink 1s infinite;
+}
 
-/* line 42, ../sass/app.sass */
+/* line 53, ../sass/app.sass */
 .finger,
 .pad {
   height: 120px;
   width: 100px;
 }
 
-/* line 47, ../sass/app.sass */
+/* line 58, ../sass/app.sass */
 .finger,
 .char {
-  -webkit-transform-origin: 50% 50%;
   -moz-transform-origin: 50% 50%;
   -ms-transform-origin: 50% 50%;
   -o-transform-origin: 50% 50%;
+  -webkit-transform-origin: 50% 50%;
   transform-origin: 50% 50%;
 }
 
-/* line 51, ../sass/app.sass */
+/* line 62, ../sass/app.sass */
 .finger {
   position: absolute;
 }
 
-/* line 54, ../sass/app.sass */
+/* line 65, ../sass/app.sass */
 .pad {
   border: 2px solid #eef0db;
   border-radius: 100px;
@@ -61,12 +128,12 @@ body {
   top: 0;
   left: 0;
 }
-/* line 63, ../sass/app.sass */
+/* line 74, ../sass/app.sass */
 .finger.hover .pad {
   background-color: rgba(238, 240, 219, 0.3);
 }
 
-/* line 66, ../sass/app.sass */
+/* line 77, ../sass/app.sass */
 .slider {
   margin: auto;
   position: absolute;
@@ -76,12 +143,12 @@ body {
   height: 100%;
   width: 2px;
 }
-/* line 74, ../sass/app.sass */
+/* line 85, ../sass/app.sass */
 .finger.hover .slider {
   background-color: #eef0db;
 }
 
-/* line 77, ../sass/app.sass */
+/* line 88, ../sass/app.sass */
 .char {
   font-size: 50px;
   position: absolute;
@@ -90,7 +157,7 @@ body {
   margin-bottom: 5px;
 }
 
-/* line 84, ../sass/app.sass */
+/* line 95, ../sass/app.sass */
 .info {
   font-size: 100px;
   opacity: 0.3;

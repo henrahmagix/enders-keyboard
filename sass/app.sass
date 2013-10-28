@@ -21,6 +21,16 @@ $animSpeed: 30ms
 *
     @include box-sizing(border-box)
 
+@include keyframes(blink)
+    0%
+        opacity: 0
+    50%
+        opacity: 0
+    51%
+        opacity: 1
+    100%
+        opacity: 1
+
 body
     background-color: $bg
     color: $fg
@@ -35,9 +45,10 @@ body
     position: absolute
     top: 0
     left: 0
-    height: 100%
-    width: 100%
     white-space: pre
+
+    .cursor
+        @include animation(blink 1s infinite)
 
 .finger,
 .pad
