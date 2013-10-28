@@ -203,7 +203,7 @@ $(function () {
 
     var AppView = View.extend({
         el: '#app',
-        template: '<div class="display"><span class="content">&nbsp;</span><span class="cursor">|</span></div>',
+        template: '<div class="display"><span class="content"></span><span class="cursor"></span></div>',
         events: {
             'touchmove': 'preventDefault',
             'touchstart .js-touch-capture': 'action',
@@ -221,12 +221,14 @@ $(function () {
         addFinger: function (finger) {
             this.addView(FingerView, finger.id, 'append', {model: new Finger(finger)});
             this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
-                var input = this.$input.html();
+                // Get the current text.
+                var input = this.$input.text();
                 if (attrs.id === 'backspace') {
-                    this.$input.html(input.slice(0, -1));
+                    // Remove the last character.
+                    this.$input.text(input.slice(0, -1));
                 } else {
-                    var char = attrs.value;
-                    this.$input.html(input + char);
+                    // Add the current character.
+                    this.$input.text(input + attrs.value);
                 }
             });
         },
@@ -273,12 +275,12 @@ $(function () {
             id: 'thumb',
             step: defaultStep,
             charSet: [
-                {id: 'return', title: '&crarr;', value: '<br> '},
+                {id: 'return', title: '&crarr;', value: '\n'},
                 {id: 'space', title: '&rarr;', value: ' ', initial: true},
                 {id: 'backspace', title: '&larr;', value: null}
             ],
             angle: -60,
-            top: 340,
+            top: 400,
             left: 110
         },
         {
@@ -286,7 +288,7 @@ $(function () {
             step: defaultStep,
             charSet: 'abcdefg',
             angle: -10,
-            top: 160,
+            top: 220,
             left: 270
         },
         {
@@ -294,7 +296,7 @@ $(function () {
             step: defaultStep,
             charSet: 'hijklmn',
             angle: 0,
-            top: 140,
+            top: 200,
             left: 410
         },
         {
@@ -302,7 +304,7 @@ $(function () {
             step: defaultStep,
             charSet: 'opqrst',
             angle: 5,
-            top: 140,
+            top: 200,
             left: 550
         },
         {
@@ -310,7 +312,7 @@ $(function () {
             step: defaultStep,
             charSet: 'uvwxyz',
             angle: 30,
-            top: 210,
+            top: 270,
             left: 680
         }
     ];

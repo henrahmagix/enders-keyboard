@@ -6,11 +6,12 @@ $bg: $black
 $fg: $white
 $hoverbg: transparentize($fg, 0.7)
 $sliderbg: $fg
+$textColor: $fg
 
 $fingerSize: 100px
 $fingerHeight: $fingerSize * 1.2
 $charSize: $fingerSize / 2
-$inputCharSize: $charSize / 2
+$inputCharSize: $charSize / 1.5
 $pad: $fingerSize / 4
 
 $sliderWidth: 2px
@@ -38,7 +39,7 @@ body,
 
 body
     background-color: $bg
-    color: $fg
+    color: $textColor
     margin: 0
     padding: $pad
 
@@ -46,7 +47,9 @@ body
     position: relative
 
 .display
-    font-size: $inputCharSize
+    font:
+        family: monospace
+        size: $inputCharSize
     position: absolute
     top: 0
     left: 0
@@ -54,6 +57,11 @@ body
 
     .cursor
         @include animation(blink 1s infinite)
+        background-color: $textColor
+        display: inline-block
+        height: 1em
+        width: 2px
+        vertical-align: top
 
 .finger,
 .pad
