@@ -15,7 +15,6 @@ $(function () {
             _(cssPrefixes).each(function (prefix) {
                 newAttrs[prefix + attr] = value;
             });
-            console.log(newAttrs);
             $el.css(newAttrs);
         });
     };
@@ -119,7 +118,7 @@ $(function () {
 
     var FingerView = View.extend({
         className: 'finger',
-        template: '<div class="slider"><div class="pad"></div></div><div class="char">{{ currentChar }}</div>',
+        template: '<div class="slider"><div class="pad js-touch-capture" data-finger-id="{{ id }}"></div></div><div class="char">{{ currentChar }}</div>',
         onReady: function () {
             this.$el.attr('id', this.model.id);
             this.chars = this.model.get('charSet');
@@ -143,7 +142,7 @@ $(function () {
             vendorStyles(this.$el, {transform: 'rotate(' + this.model.get('angle') + 'deg)'});
             vendorStyles(this.$char, {transform: 'rotate(' + (this.model.get('angle') * -1) + 'deg)'});
         },
-        start: function (touch) {
+        touchstart: function (touch) {
             this.$el.addClass('hover');
             this.startY = touch.pageY;
             this.pageY = this.startY;
@@ -169,10 +168,10 @@ $(function () {
         renderChar: function (model, char) {
             this.$char.html(char);
         },
-        move: function (touch) {
+        touchmove: function (touch) {
             this.updateCoords(touch);
         },
-        end: function () {
+        touchend: function () {
             this.$el.removeClass('hover');
             this.trigger('select:char', this.getSelected().toJSON());
             this.reset();
@@ -206,9 +205,10 @@ $(function () {
         el: '#app',
         template: '<div class="display"><span class="content">&nbsp;</span><span class="cursor">|</span></div>',
         events: {
-            'touchstart': 'action',
-            'touchmove': 'action',
-            'touchend': 'action'
+            'touchmove': 'preventDefault',
+            'touchstart .js-touch-capture': 'action',
+            'touchmove .js-touch-capture': 'action',
+            'touchend .js-touch-capture': 'action'
         },
         initialize: function (options) {
             View.prototype.initialize.apply(this, arguments);
@@ -230,26 +230,39 @@ $(function () {
                 }
             });
         },
+        touchTracker: {},
         action: function (event) {
-            event.preventDefault();
-            var method = event.type.replace('touch', '');
-            var touches = event.touches || event.originalEvent.touches;
+            this.preventDefault(event);
+            var method = event.type;
+            var touches = event.originalEvent.changedTouches;
             if (touches.length) {
                 _(touches).each(function (touch) {
-                    if (touch.target !== this.el) {
-                        var finger = this.getFingerFromTarget(touch.target);
+                    var finger = this.getFingerViewFromTouch(touch, method, event);
+                    if (finger) {
                         finger[method].call(finger, touch);
+                    }
+                    if (method === 'touchend') {
+                        delete this.touchTracker[touch.identifier];
                     }
                 }, this);
             } else {
-                var finger = this.getFingerFromTarget(event.target);
-                finger[method].call(finger);
+                this.touchTracker = {};
             }
         },
-        getFingerFromTarget: function (target) {
-            var $el = $(target);
-            var fingerID = $el.closest('.finger').attr('id');
-            return this.views[fingerID];
+        getFingerViewFromTouch: function (touch, type, event) {
+            var fingerView;
+            if (type === 'touchstart') {
+                var $el = $(event.currentTarget);
+                var fingerID = $el.data('finger-id');
+                fingerView = this.views[fingerID];
+                this.touchTracker[touch.identifier] = fingerView;
+            } else {
+                fingerView = this.touchTracker[touch.identifier];
+            }
+            return fingerView;
+        },
+        preventDefault: function (event) {
+            event.preventDefault();
         }
     });
 
