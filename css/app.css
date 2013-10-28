@@ -69,6 +69,13 @@
   }
 }
 /* line 34, ../sass/app.sass */
+html,
+body,
+#app {
+  height: 100%;
+}
+
+/* line 39, ../sass/app.sass */
 body {
   background-color: #1a1a1a;
   color: #eef0db;
@@ -76,12 +83,12 @@ body {
   padding: 25px;
 }
 
-/* line 40, ../sass/app.sass */
+/* line 45, ../sass/app.sass */
 #app {
   position: relative;
 }
 
-/* line 43, ../sass/app.sass */
+/* line 48, ../sass/app.sass */
 .display {
   font-size: 25px;
   position: absolute;
@@ -89,21 +96,21 @@ body {
   left: 0;
   white-space: pre;
 }
-/* line 50, ../sass/app.sass */
+/* line 55, ../sass/app.sass */
 .display .cursor {
   -moz-animation: blink 1s infinite;
   -webkit-animation: blink 1s infinite;
   animation: blink 1s infinite;
 }
 
-/* line 53, ../sass/app.sass */
+/* line 58, ../sass/app.sass */
 .finger,
 .pad {
   height: 120px;
   width: 100px;
 }
 
-/* line 58, ../sass/app.sass */
+/* line 63, ../sass/app.sass */
 .finger,
 .char {
   -moz-transform-origin: 50% 50%;
@@ -113,12 +120,12 @@ body {
   transform-origin: 50% 50%;
 }
 
-/* line 62, ../sass/app.sass */
+/* line 67, ../sass/app.sass */
 .finger {
   position: absolute;
 }
 
-/* line 65, ../sass/app.sass */
+/* line 70, ../sass/app.sass */
 .pad {
   border: 2px solid #eef0db;
   border-radius: 100px;
@@ -128,12 +135,12 @@ body {
   top: 0;
   left: 0;
 }
-/* line 74, ../sass/app.sass */
+/* line 79, ../sass/app.sass */
 .finger.hover .pad {
   background-color: rgba(238, 240, 219, 0.3);
 }
 
-/* line 77, ../sass/app.sass */
+/* line 82, ../sass/app.sass */
 .slider {
   margin: auto;
   position: absolute;
@@ -143,12 +150,12 @@ body {
   height: 100%;
   width: 2px;
 }
-/* line 85, ../sass/app.sass */
+/* line 90, ../sass/app.sass */
 .finger.hover .slider {
   background-color: #eef0db;
 }
 
-/* line 88, ../sass/app.sass */
+/* line 93, ../sass/app.sass */
 .char {
   font-size: 50px;
   position: absolute;
@@ -157,7 +164,7 @@ body {
   margin-bottom: 5px;
 }
 
-/* line 95, ../sass/app.sass */
+/* line 100, ../sass/app.sass */
 .info {
   font-size: 100px;
   opacity: 0.3;
