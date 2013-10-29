@@ -5,16 +5,20 @@ $white: hsl(65, 40, 90)
 $bg: $black
 $fg: $white
 $hoverbg: transparentize($fg, 0.7)
+$hoverText: $black
 $sliderbg: $fg
 $textColor: $fg
+$buttonBorder: $fg
 
 $fingerSize: 100px
 $fingerHeight: $fingerSize * 1.2
 $charSize: $fingerSize / 2
 $inputCharSize: $charSize / 1.5
 $pad: $fingerSize / 4
-
+$buttonHeight: 50px
+$buttonWidth: 250px
 $sliderWidth: 2px
+
 $animSpeed: 30ms
 
 @import compass/css3
@@ -40,6 +44,7 @@ body,
 body
     background-color: $bg
     color: $textColor
+    font-family: monospace
     margin: 0
     padding: $pad
 
@@ -47,9 +52,7 @@ body
     position: relative
 
 .display
-    font:
-        family: monospace
-        size: $inputCharSize
+    font-size: $inputCharSize
     position: absolute
     top: 0
     left: 0
@@ -86,6 +89,30 @@ body
     left: 0
     .finger.hover &
         background-color: $hoverbg
+    .edit &
+        &:before,
+        &:after
+            content: ''
+            border: 1px solid $fg
+                radius: 100%
+            position: absolute
+            top: 50%
+            left: 50%
+            z-index: -1
+        &:before
+            $size: $fingerSize * 1.5
+            height: $size
+            width: $size
+            margin:
+                top: -($size / 2)
+                left: -($size / 2)
+        &:after
+            $size: $fingerSize / 4
+            height: $size
+            width: $size
+            margin:
+                top: -($size / 2)
+                left: -($size / 2)
 
 .slider
     margin: auto
@@ -97,6 +124,8 @@ body
     width: $sliderWidth
     .finger.hover &
         background-color: $sliderbg
+    .finger.hover.edit &
+        background-color: transparent
 
 .char
     font-size: $charSize
@@ -104,13 +133,33 @@ body
     bottom: 100%
     left: 0
     margin-bottom: 5px
+    .edit &
+        display: none
 
-.info
-    font-size: $fingerSize
-    opacity: 0.3
+.button-wrapper
+    font-size: $inputCharSize
     position: absolute
-    top: 0
-    right: 0
     bottom: 0
-    left: 0
     text-align: center
+    width: 100%
+
+.button
+    border: 1px solid $buttonBorder
+        radius: 3px
+    display: inline-block
+    line-height: 1
+    margin: 0 20px
+    padding: 5px 0
+    height: $buttonHeight
+    width: $buttonWidth
+    &.hover
+        background-color: $hoverbg
+
+.text-inactive
+    display: block
+    .active &
+        display: none
+.text-active
+    display: none
+    .active &
+        display: block

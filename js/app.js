@@ -126,7 +126,11 @@
     // current character for selection, and returns that character on touchend.
     var FingerView = View.extend({
         className: 'finger',
-        template: '<div class="slider"><div class="pad js-touch-capture" data-finger-id="{{ id }}"></div></div><div class="char">{{ currentChar }}</div>',
+        template:
+            '<div class="slider">' +
+                '<div class="pad js-touch-pad" data-finger-id="{{ id }}"></div>' +
+            '</div>' +
+            '<div class="char">{{ currentChar }}</div>',
         // Run when rendered.
         onReady: function () {
             this.$el.attr('id', this.model.id);
@@ -135,10 +139,15 @@
             this.$slider = this.$('.slider');
             this.$pad = this.$('.pad');
             this.$char = this.$('.char');
+            // Listen for character changes.
             this.listenTo(this.chars, 'change:selected', this.updateChar);
             this.listenTo(this.model, 'change:currentChar', this.renderChar);
             // Select the initial character.
             this.chars.setInitial();
+            // Listen for customisation triggers.
+            this.on('customise:start', this.customStart);
+            this.on('customise:end', this.customEnd);
+            this.on('customise:reset', this.customReset);
         },
         // Run when attached to the DOM.
         onLoad: function () {
@@ -245,28 +254,55 @@
         getTopFromIndex: function (index) {
             var step = this.model.get('step');
             return step * index + step / 2;
+        },
+        customStart: function () {
+            this.$el.addClass('edit');
+        },
+        customEnd: function () {
+            this.$el.removeClass('edit');
+        },
+        customReset: function () {
+            this.$el.removeClass('edit');
         }
     });
 
     var AppView = View.extend({
         el: '#app',
-        template: '<div class="display"><span class="content"></span><span class="cursor"></span></div>',
+        template:
+            '<div class="button-wrapper">' +
+                '<div class="button reset js-hover js-reset">reset</div>' +
+                '<div class="button position js-hover js-position">' +
+                    '<span class="text-inactive">move/rotate</span>' +
+                    '<span class="text-active">ok</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="display">' +
+                '<span class="content"></span>' +
+                '<span class="cursor"></span>' +
+            '</div>',
         events: {
             'touchmove': 'preventDefault',
-            'touchstart .js-touch-capture': 'action',
-            'touchmove .js-touch-capture': 'action',
-            'touchend .js-touch-capture': 'action'
+            'touchstart .js-touch-pad': 'action',
+            'touchmove .js-touch-pad': 'action',
+            'touchend .js-touch-pad': 'action',
+            'touchstart .js-hover': 'hoverStart',
+            'touchend .js-hover': 'hoverEnd',
+            'touchend .js-reset': 'reset',
+            'touchend .js-position': 'position'
         },
         initialize: function (options) {
             View.prototype.initialize.apply(this, arguments);
-            _.extend(this, options);
+            this.options = options;
         },
         onReady: function () {
             this.$input = this.$('.display .content');
-            _(this.fingers).each(this.addFinger, this);
+            this.$position = this.$('.position');
+            this.fingers = [];
+            _(this.options.fingers).each(this.addFinger, this);
         },
         addFinger: function (finger) {
             this.addView(FingerView, finger.id, 'append', {model: new Finger(finger)});
+            this.fingers.push(this.views[finger.id]);
             this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
                 // Get the current text.
                 var input = this.$input.text();
@@ -318,6 +354,34 @@
         },
         preventDefault: function (event) {
             event.preventDefault();
+        },
+        hoverStart: function (event) {
+            $(event.currentTarget).addClass('hover');
+        },
+        hoverEnd: function (event) {
+            $(event.currentTarget).removeClass('hover');
+        },
+        buttonActiveClass: 'active',
+        reset: function (event) {
+            this.preventDefault(event);
+            this.$position.removeClass(this.buttonActiveClass);
+            _(this.fingers).each(function (finger) {
+                finger.trigger('customise:reset');
+            });
+        },
+        position: function (event) {
+            this.preventDefault(event);
+            var trigger;
+            if (this.$position.hasClass(this.buttonActiveClass)) {
+                this.$position.removeClass(this.buttonActiveClass);
+                trigger = 'end';
+            } else {
+                this.$position.addClass(this.buttonActiveClass);
+                trigger = 'start';
+            }
+            _(this.fingers).each(function (finger) {
+                finger.trigger('customise:' + trigger);
+            });
         }
     });
 
