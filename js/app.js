@@ -162,25 +162,51 @@
         // Touch methods.
         touchstart: function (touch) {
             this.$el.addClass('hover');
+            this.startX = touch.pageX;
             this.startY = touch.pageY;
+            this.pageX = this.startX;
             this.pageY = this.startY;
+            this.dist = 0;
             this.top = this.getTop(this.getInitial());
             this.updateCoords(touch);
         },
         updateCoords: function (touch) {
             // Update position.
+            var oldX = this.pageX;
             var oldY = this.pageY;
+            var newX = touch.pageX;
             var newY = touch.pageY;
+            this.pageX = newX;
             this.pageY = newY;
-            // Increment/decrement top value.
-            this.top += newY - oldY;
+            // Get the straight-line distance between the coordinates.
+            var verticalDistance = this.getVerticalDistance(oldX, oldY);
+            // Increment/decrement distance and top value.
+            this.dist += verticalDistance;
+            this.top += verticalDistance;
             // Move pad to new position.
-            this.$pad.css('top', newY - this.startY);
+            this.$pad.css('top', this.dist);
             // If there's a new character to be selected, select it.
             var newChar = this.getCharFromTop(this.top);
             if (newChar !== this.getSelected()) {
                 newChar.set('selected', true);
             }
+        },
+        getVerticalDistance: function (oldX, oldY) {
+            // Get current coordinates with oldX and oldY as the origin: [0,0]
+            var x = this.pageX - oldX;
+            var y = this.pageY - oldY;
+            // Get the angle of this finger in Radians.
+            var angle = this.model.get('angle') * Math.PI / 180;
+            // Mirror the angle to rotate the finger's local axes to match the
+            // screen axes.
+            angle *= -1;
+            // Calculate the new coordinates of x,y in the new axes.
+            var cosA = Math.cos(angle);
+            var sinA = Math.sin(angle);
+            var x1 = (x * cosA) - (y * sinA);
+            var y1 = (y * cosA) + (x * sinA);
+            // Return the vertical distance traveled.
+            return y1;
         },
         touchmove: function (touch) {
             this.updateCoords(touch);
