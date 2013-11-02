@@ -136,7 +136,20 @@
         }
     });
     var FingerCollection = Backbone.Collection.extend({
-        model: Finger
+        model: Finger,
+        toJSON: function () {
+            var models = Backbone.Collection.prototype.toJSON.apply(this, arguments);
+            _(models).each(function (attrs) {
+                if (attrs.charSet instanceof CharacterSet) {
+                    attrs.charSet = attrs.charSet.toJSON();
+                    _(attrs.charSet).each(function (char) {
+                        // Remove selected attribute. It shouldn't be saved.
+                        delete char.selected;
+                    });
+                }
+            });
+            return models;
+        }
     });
 
     // Finger view. Positions itself, moves a pad along an axis, shows the
@@ -177,7 +190,7 @@
             this.$el.height(charSetHeight);
             // Position the slider based on the initial character.
             this.initialTop = this.getTop(this.getInitial());
-            this.resetPad();
+            this.reset();
             // Position the finger based on model data.
             this.$el.css('top', this.model.get('top'));
             this.$el.css('left', this.model.get('left'));
@@ -241,9 +254,6 @@
         reset: function () {
             var initial = this.getInitial();
             initial.set('selected', true);
-            this.resetPad();
-        },
-        resetPad: function () {
             this.$pad.css('top', this.initialTop);
         },
         // Character methods.
@@ -436,10 +446,10 @@
             if (data === null) {
                 data = this.options.defaultData;
             }
-            this.collection.reset(data, {silent: true});
+            this.collection.reset(data);
         },
         saveData: function () {
-            this.updateStorage(this.localStorageName, this.collection);
+            this.updateStorage(this.localStorageName, this.collection.toJSON());
         }
     });
 
