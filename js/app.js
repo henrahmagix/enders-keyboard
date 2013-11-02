@@ -31,12 +31,25 @@
             if (template) {
                 this.template = _.template(template);
             }
+            if (this.listen) {
+                _(this.listen).each(this.delegateListener, this);
+            }
             if (this.onReady) {
                 this.on('ready', this.onReady);
             }
             if (this.onLoad) {
                 this.on('load', this.onLoad);
             }
+        },
+        delegateListener: function (method, eventArgs) {
+            if (!this[method]) {
+                console.error("No method called '" + method + "' found.");
+                return;
+            }
+            var args = eventArgs.split(' ');
+            var event = args[0];
+            var target = args[1] || this;
+            this.listenTo(target, event, this[method]);
         },
         render: function () {
             if (this.template) {
@@ -121,6 +134,9 @@
                 this.set('charSet', new CharacterSet(options.charSet, {parse: true}));
             }
         }
+    });
+    var FingerCollection = Backbone.Collection.extend({
+        model: Finger
     });
 
     // Finger view. Positions itself, moves a pad along an axis, shows the
@@ -299,14 +315,24 @@
             'touchend .js-position': 'position',
             'touchend .js-peek': 'toggleWorking'
         },
+        listen: {
+            'load': 'loadData',
+            'save': 'saveData'
+        },
+        initialize: function () {
+            View.prototype.initialize.apply(this, arguments);
+            this.collection = new FingerCollection();
+            this.trigger('load');
+        },
         onReady: function () {
             this.$input = this.$('.display .content');
             this.$position = this.$('.position');
             this.fingers = [];
-            _(this.options.fingers).each(this.addFinger, this);
+            this.collection.each(this.addFinger, this);
+            this.trigger('save');
         },
         addFinger: function (finger) {
-            this.addView(FingerView, finger.id, 'append', {model: new Finger(finger)});
+            this.addView(FingerView, finger.id, 'append', {model: finger});
             this.fingers.push(this.views[finger.id]);
             this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
                 // Get the current text.
@@ -403,12 +429,35 @@
         },
         hideWorking: function () {
             this.$el.removeClass(this.peekClass);
+        },
+        localStorageName: 'finger-data',
+        loadData: function () {
+            var data = this.loadFromStorage(this.localStorageName);
+            if (data === null) {
+                data = this.options.defaultData;
+            }
+            this.collection.reset(data, {silent: true});
+        },
+        saveData: function () {
+            this.updateStorage(this.localStorageName, this.collection);
         }
     });
 
+    var Storage = {
+        localStorageAppPrefix: 'enders-keyboard',
+        updateStorage: function(name, data) {
+            localStorage.setItem(this.localStorageAppPrefix + '-' + name, JSON.stringify(data));
+        },
+        loadFromStorage: function(name) {
+            return JSON.parse(localStorage.getItem(this.localStorageAppPrefix + '-' + name));
+        }
+    };
+
+    _.extend(AppView.prototype, Storage);
+
     // Setup the default finger data.
     var defaultStep = 40;
-    var fingers = [
+    var defaultData = [
         {
             id: 'thumb',
             step: defaultStep,
@@ -457,7 +506,9 @@
 
     $(function () {
         // When the DOM is ready, run the app.
-        var app = new AppView({fingers: fingers}).render();
+        var app = new AppView({
+            defaultData: defaultData
+        }).render();
     });
 
 })(window._, window.$, window.Backbone);
