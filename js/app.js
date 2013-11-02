@@ -143,16 +143,15 @@
         // Run when attached to the DOM.
         onLoad: function () {
             // Cache $ calls.
-            this.height = this.$el.height();
-            this.width = this.$el.width();
             this.padHeight = this.$pad.height();
             // Set the slider height based on number of characters in this set.
             var step = this.model.get('step');
-            var charSetHeight = step * this.chars.length + this.height;
+            var charSetHeight = step * this.chars.length;
             this.$slider.height(charSetHeight);
             this.$el.height(charSetHeight);
             // Position the slider based on the initial character.
-            this.$slider.css('top', this.getTop(this.getInitial()) * -1 + step / 2);
+            this.initialTop = this.getTop(this.getInitial());
+            this.resetPad();
             // Position the finger based on model data.
             this.$el.css('top', this.model.get('top'));
             this.$el.css('left', this.model.get('left'));
@@ -164,43 +163,23 @@
             this.$el.addClass('hover');
             this.startX = touch.pageX;
             this.startY = touch.pageY;
-            this.pageX = this.startX;
-            this.pageY = this.startY;
-            this.dist = 0;
-            this.top = this.getTop(this.getInitial());
             this.updateCoords(touch);
         },
         updateCoords: function (touch) {
             // Update position.
-            var oldX = this.pageX;
-            var oldY = this.pageY;
-            var newX = touch.pageX;
-            var newY = touch.pageY;
-            this.pageX = newX;
-            this.pageY = newY;
-            // Get the straight-line distance between the coordinates.
-            var verticalDistance = this.getVerticalDistance(oldX, oldY);
-            // Increment/decrement distance and top value.
-            this.dist += verticalDistance;
-            this.top += verticalDistance;
-            // Move pad to new position.
-            this.$pad.css('top', this.dist);
-            // If there's a new character to be selected, select it.
-            var newChar = this.getCharFromTop(this.top);
-            if (newChar !== this.getSelected()) {
-                newChar.set('selected', true);
-            }
+            this.pageX = touch.pageX;
+            this.pageY = touch.pageY;
         },
-        getVerticalDistance: function (oldX, oldY) {
-            // Get current coordinates with oldX and oldY as the origin: [0,0]
-            var x = this.pageX - oldX;
-            var y = this.pageY - oldY;
+        getVerticalDistance: function () {
+            // Get current coordinates with starting coords as the origin: [0,0]
+            var x = this.pageX - this.startX;
+            var y = this.pageY - this.startY;
             // Get the angle of this finger in Radians.
             var angle = this.model.get('angle') * Math.PI / 180;
             // Mirror the angle to rotate the finger's local axes to match the
             // screen axes.
             angle *= -1;
-            // Calculate the new coordinates of x,y in the new axes.
+            // Calculate the new coordinates of [x,y] in the new axes.
             var cosA = Math.cos(angle);
             var sinA = Math.sin(angle);
             var x1 = (x * cosA) - (y * sinA);
@@ -210,6 +189,17 @@
         },
         touchmove: function (touch) {
             this.updateCoords(touch);
+            // Get the straight-line distance between the coordinates.
+            var verticalDistance = this.getVerticalDistance();
+            // Increment/decrement distance and top value.
+            this.top = this.initialTop + verticalDistance;
+            // Move pad to new position.
+            this.$pad.css('top', this.top);
+            // If there's a new character to be selected, select it.
+            var newChar = this.getCharFromTop(this.top);
+            if (newChar !== this.getSelected()) {
+                newChar.set('selected', true);
+            }
         },
         touchend: function () {
             this.$el.removeClass('hover');
@@ -219,7 +209,10 @@
         reset: function () {
             var initial = this.getInitial();
             initial.set('selected', true);
-            this.$pad.css('top', 0);
+            this.resetPad();
+        },
+        resetPad: function () {
+            this.$pad.css('top', this.initialTop);
         },
         // Character methods.
         updateChar: function (model, selected) {
@@ -238,15 +231,20 @@
         },
         getCharFromTop: function (top) {
             var step = this.model.get('step');
-            if (top < step) {
+            top -= step / 2;
+            var index = Math.round(top / step);
+            if (index < 0) {
                 return this.chars.first();
             }
-            var index = Math.floor(top / step);
             return this.chars.at(index) || this.chars.last();
         },
-        getTop: function (char) {
+        getTop: function (char, noHalfStep) {
+            var index = char.collection.indexOf(char);
+            return this.getTopFromIndex(index);
+        },
+        getTopFromIndex: function (index) {
             var step = this.model.get('step');
-            return step * char.collection.indexOf(char) + step / 2;
+            return step * index + step / 2;
         }
     });
 

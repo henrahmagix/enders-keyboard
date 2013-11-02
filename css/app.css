@@ -135,7 +135,7 @@ body {
 .pad {
   border: 2px solid #eef0db;
   border-radius: 100px;
-  margin-top: 60px;
+  margin-top: -60px;
   margin-left: -50px;
   position: absolute;
   top: 0;
