@@ -89,6 +89,7 @@ body
     left: 0
     .finger.hover &
         background-color: $hoverbg
+    .behind-the-scenes &,
     .edit &
         &:before,
         &:after
@@ -100,6 +101,7 @@ body
             left: 50%
             z-index: -1
         &:before
+            // Outer circle.
             $size: $fingerSize * 1.5
             height: $size
             width: $size
@@ -107,12 +109,16 @@ body
                 top: -($size / 2)
                 left: -($size / 2)
         &:after
+            // Inner circle.
             $size: $fingerSize / 4
             height: $size
             width: $size
             margin:
                 top: -($size / 2)
                 left: -($size / 2)
+    // Hide the outer circle when peeking.
+    .behind-the-scenes &:before
+        display: none
 
 .slider
     margin: auto
@@ -122,6 +128,7 @@ body
     margin-left: -$sliderWidth / 2
     height: 100%
     width: $sliderWidth
+    .behind-the-scenes &,
     .finger.hover &
         background-color: $sliderbg
     .finger.hover.edit &
@@ -149,11 +156,20 @@ body
     display: inline-block
     line-height: 1
     margin: 0 20px
-    padding: 5px 0
+    padding: 5px
     height: $buttonHeight
     width: $buttonWidth
     &.hover
         background-color: $hoverbg
+
+    &.peek
+        font:
+            size: 12px
+        position: absolute
+        bottom: 0
+        right: 0
+        height: auto
+        width: auto
 
 .text-inactive
     display: block
@@ -163,3 +179,29 @@ body
     display: none
     .active &
         display: block
+
+.char-position
+    background-color: rgba($fg, 0.5)
+    color: $bg
+    font:
+        size: 1.4em
+        weight: bold
+    line-height: 1
+    position: absolute
+    text-align: center
+    $size: 20px
+    height: $size
+    width: $size
+    margin:
+        top: -($size / 2)
+        left: -($size / 2) + ($sliderWidth / 2)
+    &,
+    &:before
+        display: inline-block
+        vertical-align: middle
+    &:before
+        content: ''
+        height: 100%
+    opacity: 0
+    .behind-the-scenes &
+        opacity: 1

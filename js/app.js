@@ -166,6 +166,12 @@
             this.$el.css('left', this.model.get('left'));
             vendorStyles(this.$el, {transform: 'rotate(' + this.model.get('angle') + 'deg)'});
             vendorStyles(this.$char, {transform: 'rotate(' + (this.model.get('angle') * -1) + 'deg)'});
+            // Show all points of the characters.
+            var showChar = $('<div>').addClass('char-position');
+            this.chars.each(function (char, i) {
+                var top = this.getTopFromIndex(i);
+                this.$slider.append(showChar.clone().html(char.get('title')).css('top', top));
+            }, this);
         },
         // Touch methods.
         touchstart: function (touch) {
@@ -275,6 +281,7 @@
                     '<span class="text-inactive">move/rotate</span>' +
                     '<span class="text-active">ok</span>' +
                 '</div>' +
+                '<div class="button peek js-hover js-peek">peek</div>' +
             '</div>' +
             '<div class="display">' +
                 '<span class="content"></span>' +
@@ -288,7 +295,8 @@
             'touchstart .js-hover': 'hoverStart',
             'touchend .js-hover': 'hoverEnd',
             'touchend .js-reset': 'reset',
-            'touchend .js-position': 'position'
+            'touchend .js-position': 'position',
+            'touchend .js-peek': 'toggleWorking'
         },
         initialize: function (options) {
             View.prototype.initialize.apply(this, arguments);
@@ -382,6 +390,14 @@
             _(this.fingers).each(function (finger) {
                 finger.trigger('customise:' + trigger);
             });
+        },
+        toggleWorking: function (event) {
+            var peekClass = 'behind-the-scenes';
+            if (this.$el.hasClass(peekClass)) {
+                this.$el.removeClass(peekClass);
+            } else {
+                this.$el.addClass(peekClass);
+            }
         }
     });
 
