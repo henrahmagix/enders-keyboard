@@ -265,25 +265,26 @@ body {
   font-size: 1.4em;
   font-weight: bold;
   line-height: 1;
+  opacity: 0;
+  pointer-events: none;
   position: absolute;
   text-align: center;
   height: 20px;
   width: 20px;
   margin-top: -10px;
   margin-left: -9px;
-  opacity: 0;
 }
-/* line 198, ../sass/app.sass */
+/* line 200, ../sass/app.sass */
 .char-position, .char-position:before {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 202, ../sass/app.sass */
+/* line 204, ../sass/app.sass */
 .char-position:before {
   content: "";
   height: 100%;
 }
-/* line 206, ../sass/app.sass */
+/* line 207, ../sass/app.sass */
 .behind-the-scenes .char-position {
   opacity: 1;
 }
