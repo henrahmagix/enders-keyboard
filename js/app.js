@@ -372,6 +372,7 @@
         buttonActiveClass: 'active',
         reset: function (event) {
             this.preventDefault(event);
+            this.hideWorking();
             this.$position.removeClass(this.buttonActiveClass);
             _(this.fingers).each(function (finger) {
                 finger.trigger('customise:reset');
@@ -379,6 +380,7 @@
         },
         position: function (event) {
             this.preventDefault(event);
+            this.hideWorking();
             var trigger;
             if (this.$position.hasClass(this.buttonActiveClass)) {
                 this.$position.removeClass(this.buttonActiveClass);
@@ -391,13 +393,19 @@
                 finger.trigger('customise:' + trigger);
             });
         },
+        peekClass: 'behind-the-scenes',
         toggleWorking: function (event) {
-            var peekClass = 'behind-the-scenes';
-            if (this.$el.hasClass(peekClass)) {
-                this.$el.removeClass(peekClass);
+            if (this.$el.hasClass(this.peekClass)) {
+                this.hideWorking();
             } else {
-                this.$el.addClass(peekClass);
+                this.showWorking();
             }
+        },
+        showWorking: function () {
+            this.$el.addClass(this.peekClass);
+        },
+        hideWorking: function () {
+            this.$el.removeClass(this.peekClass);
         }
     });
 
