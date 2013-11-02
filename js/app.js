@@ -26,6 +26,7 @@
     var View = Backbone.View.extend({
         initialize: function (options) {
             this.views = {};
+            this.options = options;
             var template = options && options.template || this.template;
             if (template) {
                 this.template = _.template(template);
@@ -297,10 +298,6 @@
             'touchend .js-reset': 'reset',
             'touchend .js-position': 'position',
             'touchend .js-peek': 'toggleWorking'
-        },
-        initialize: function (options) {
-            View.prototype.initialize.apply(this, arguments);
-            this.options = options;
         },
         onReady: function () {
             this.$input = this.$('.display .content');
