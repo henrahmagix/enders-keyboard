@@ -415,13 +415,13 @@
             // Stop window from being moved.
             'touchmove': 'preventDefault',
             // Setup pad positions and rotations.
-            'touchstart': 'setPadStart',
-            'touchmove': 'setPadMove',
-            'touchend': 'setPadEnd',
+            'touchstart': 'fingerInit',
+            'touchmove': 'fingerInit',
+            'touchend': 'fingerInit',
             // Interact with the pads.
-            'touchstart .js-touch-pad': 'action',
-            'touchmove .js-touch-pad': 'action',
-            'touchend .js-touch-pad': 'action',
+            'touchstart .js-touch-pad': 'fingerAction',
+            'touchmove .js-touch-pad': 'fingerAction',
+            'touchend .js-touch-pad': 'fingerAction',
             // Button actions.
             'touchend .js-reset': 'reset',
             'touchend .js-peek': 'toggleWorking'
@@ -491,39 +491,40 @@
         currentFingerPositioningIndex: 0,
         // Show the axis of where the finger will be placed and its rotation.
         tempSlider: $('<div class="temp-slider"></div>'),
-        setPadStart: function (event) {
+        fingerInit: function (event) {
             if (this.readyForInteraction) {
                 // Don't set finger position if app is ready for use.
                 this.preventDefault(event);
                 return;
             }
+            if (event.target !== this.el) {
+                // Only set finger position if the event originated on this app's
+                // element, thus precluding interactions with buttons.
+                return;
+            }
+            var method = event.type + 'Finger';
+            var touches = this.getTouches(event);
+            // Pass only the first touch. Ignore the rest.
+            this[method](touches[0]);
+        },
+        touchstartFinger: function (touch) {
             if (!this.tempSlider.closest(this.$el).length) {
                 // Add the temp slider when it's not in the app.
                 this.$el.append(this.tempSlider);
             }
-            // Save only the first touch. Ignore the rest.
-            var touches = this.getTouches(event);
-            var firstTouch = touches[0];
-            this.tempSliderStartX = firstTouch.pageX;
-            this.tempSliderStartY = firstTouch.pageY;
-            this.tempSliderX = firstTouch.pageX;
-            this.tempSliderY = firstTouch.pageY;
+            this.tempSliderStartX = touch.pageX;
+            this.tempSliderStartY = touch.pageY;
+            this.tempSliderX = touch.pageX;
+            this.tempSliderY = touch.pageY;
             this.tempSliderAngle = 0;
             this.tempSlider.css({
                 top: this.tempSliderY,
                 left: this.tempSliderX
             });
         },
-        setPadMove: function (event) {
-            if (this.readyForInteraction) {
-                // Don't set finger position if app is ready for use.
-                this.preventDefault(event);
-                return;
-            }
-            var touches = this.getTouches(event);
-            var firstTouch = touches[0];
-            this.tempSliderX = firstTouch.pageX;
-            this.tempSliderY = firstTouch.pageY;
+        touchmoveFinger: function (touch) {
+            this.tempSliderX = touch.pageX;
+            this.tempSliderY = touch.pageY;
             // Determine the angle and length of the path drawn by this touch.
             var xDist = this.tempSliderX - this.tempSliderStartX;
             var yDist = this.tempSliderY - this.tempSliderStartY;
@@ -538,12 +539,7 @@
             this.tempSlider.height(height);
             vendorStyles(this.tempSlider, {transform: 'rotate(' + this.tempSliderAngle + 'deg)'});
         },
-        setPadEnd: function (event) {
-            if (this.readyForInteraction) {
-                // Don't set finger position if app is ready for use.
-                this.preventDefault(event);
-                return;
-            }
+        touchendFinger: function () {
             // Reset the temp slider.
             this.tempSlider.height(0);
             vendorStyles(this.tempSlider, {transform: null});
@@ -566,7 +562,7 @@
             }
         },
         touchTracker: {},
-        action: function (event) {
+        fingerAction: function (event) {
             if (!this.readyForInteraction) {
                 // Don't select characters if the fingers aren't placed.
                 return;
@@ -618,7 +614,7 @@
         reset: function (event) {
             // Stop event triggering another finger position immediately after
             // finishing.
-            this.preventDefault(event, true);
+            this.preventDefault(event);
             // Reset app to not-ready state.
             this.isResetting = true;
             this.readyForInteraction = false;

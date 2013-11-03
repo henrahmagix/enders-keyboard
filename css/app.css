@@ -388,12 +388,13 @@ body {
   right: 0;
   bottom: 0;
   left: 0;
+  z-index: -1;
 }
-/* line 281, ../sass/app.sass */
+/* line 282, ../sass/app.sass */
 .app-ready .info {
   display: none;
 }
-/* line 283, ../sass/app.sass */
+/* line 284, ../sass/app.sass */
 .info p {
   margin: 0;
 }
