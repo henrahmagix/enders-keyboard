@@ -4,6 +4,17 @@
     _.templateSettings.evaluate = /\{%([\s\S]+?)%\}/g;
     _.templateSettings.interpolate = /\{\{([\s\S]+?)\}\}/g;
 
+    // Number helpers.
+    Number.prototype.toRadians = function () {
+        return this * (Math.PI / 180);
+    };
+    Number.prototype.toDegrees = function () {
+        return this * (180 / Math.PI);
+    };
+    Number.prototype.square = function () {
+        return this * this;
+    };
+
     // Cross-browser helpers.
     var vendors = ['', 'o', 'ms', 'moz', 'webkit'];
     var cssPrefixes = _(vendors).map(function (vendor) {
@@ -56,12 +67,18 @@
                 this.$el.html(this.template(this.getContext()));
             }
             this.trigger('ready');
+            this._ready = true;
+            if (this._loaded) {
+                // If already loaded, trigger it.
+                this.trigger('load');
+            }
             return this;
         },
         attachTo: function (target, method) {
             method = method || 'html';
             target[method](this.el);
             this.trigger('load');
+            this._loaded = true;
             return this;
         },
         getContext: function () {
@@ -127,7 +144,8 @@
     // Finger data. Controls the current selected character of a finger.
     var Finger = Backbone.Model.extend({
         defaults: {
-            currentChar: ''
+            currentChar: '',
+            isPositioned: false
         },
         initialize: function (options) {
             if (options.charSet) {
@@ -164,6 +182,7 @@
         // Run when rendered.
         onReady: function () {
             this.$el.attr('id', this.model.id);
+            this.checkIfPositioned();
             // Convenience properties for easier access and one-time computation.
             this.chars = this.model.get('charSet');
             this.$slider = this.$('.slider');
@@ -178,11 +197,6 @@
             this.on('customise:start', this.customStart);
             this.on('customise:end', this.customEnd);
             this.on('customise:reset', this.customReset);
-        },
-        // Run when attached to the DOM.
-        onLoad: function () {
-            // Cache $ calls.
-            this.padHeight = this.$pad.height();
             // Set the slider height based on number of characters in this set.
             var step = this.model.get('step');
             var charSetHeight = step * this.chars.length;
@@ -202,6 +216,22 @@
                 var top = this.getTopFromIndex(i);
                 this.$slider.append(showChar.clone().html(char.get('title')).css('top', top));
             }, this);
+        },
+        // Run when attached to the DOM.
+        onLoad: function () {
+            // Position about the center of the finger, the same as transform-origin.
+            this.$el.css({
+                'margin-top': this.$el.height() / 2 * -1,
+                'margin-left': this.$el.width() / 2 * -1
+            });
+        },
+        checkIfPositioned: function () {
+            // Set class based on positioned state of finger.
+            if (this.model.get('isPositioned') && !this.$el.hasClass('is-positioned')) {
+                this.$el.addClass('is-positioned');
+            } else if (!this.model.get('isPositioned') && this.$el.hasClass('is-positioned')) {
+                this.$el.removeClass('is-positioned');
+            }
         },
         // Touch methods.
         touchstart: function (touch) {
@@ -290,12 +320,16 @@
         },
         customStart: function () {
             this.$el.addClass('edit');
+            this.checkIfPositioned();
         },
         customEnd: function () {
             this.$el.removeClass('edit');
+            this.model.set('isPositioned', true);
+            this.checkIfPositioned();
         },
         customReset: function () {
-            this.$el.removeClass('edit');
+            this.model.set('isPositioned', false);
+            this.customStart();
         }
     });
 
@@ -303,10 +337,9 @@
         el: '#app',
         template:
             '<div class="button-wrapper">' +
-                '<div class="button reset js-hover js-reset">reset</div>' +
-                '<div class="button position js-hover js-position">' +
-                    '<span class="text-inactive">move/rotate</span>' +
-                    '<span class="text-active">ok</span>' +
+                '<div class="button reset js-hover js-reset">' +
+                    '<span class="text-inactive">reset</span>' +
+                    '<span class="text-active">resetting...</span>' +
                 '</div>' +
                 '<div class="button peek js-hover js-peek">peek</div>' +
             '</div>' +
@@ -315,14 +348,21 @@
                 '<span class="cursor"></span>' +
             '</div>',
         events: {
+            // Stop window from being moved.
             'touchmove': 'preventDefault',
+            // Setup pad positions and rotations.
+            'touchstart': 'setPadStart',
+            'touchmove': 'setPadMove',
+            'touchend': 'setPadEnd',
+            // Interact with the pads.
             'touchstart .js-touch-pad': 'action',
             'touchmove .js-touch-pad': 'action',
             'touchend .js-touch-pad': 'action',
+            // Add hover class when touching.
             'touchstart .js-hover': 'hoverStart',
             'touchend .js-hover': 'hoverEnd',
+            // Button actions.
             'touchend .js-reset': 'reset',
-            'touchend .js-position': 'position',
             'touchend .js-peek': 'toggleWorking'
         },
         listen: {
@@ -332,18 +372,28 @@
         initialize: function () {
             View.prototype.initialize.apply(this, arguments);
             this.collection = new FingerCollection();
+            // Ensure data persists and app ready state is setup.
+            this.listenTo(this.collection, 'change', this.saveData);
+            this.listenTo(this.collection, 'change reset', this.checkReadyState);
+            // Start the loading of the app.
             this.trigger('load');
         },
         onReady: function () {
+            // Cache $ selectors.
             this.$input = this.$('.display .content');
-            this.$position = this.$('.position');
+            this.$reset = this.$('.reset');
+            this.$peek = this.$('.peek');
+            // Add finger views.
             this.fingers = [];
             this.collection.each(this.addFinger, this);
+            // Ensure data is saved after finger views are setup.
             this.trigger('save');
         },
         addFinger: function (finger) {
+            // Add a view for this finger and store it on this object.
             this.addView(FingerView, finger.id, 'append', {model: finger});
             this.fingers.push(this.views[finger.id]);
+            // Update whenever the character changes.
             this.listenTo(this.views[finger.id], 'select:char', function (attrs) {
                 // Get the current text.
                 var input = this.$input.text();
@@ -356,11 +406,104 @@
                 }
             });
         },
+        getTouches: function (event) {
+            return event.originalEvent.changedTouches;
+        },
+        readyForInteraction: false,
+        checkReadyState: function () {
+            // Determine if any fingers need positioning.
+            var isReady = this.collection.every(function (model) {
+                return model.get('isPositioned');
+            });
+            this.readyForInteraction = isReady;
+        },
+        // Track the current finger index being positioned.
+        currentFingerPositioningIndex: 0,
+        // Show the axis of where the finger will be placed and its rotation.
+        tempSlider: $('<div class="temp-slider"></div>'),
+        setPadStart: function (event) {
+            if (this.readyForInteraction) {
+                // Don't set finger position if app is ready for use.
+                this.preventDefault(event);
+                return;
+            }
+            if (this.currentFingerPositioningIndex === 0) {
+                // Add the temp slider for the first time.
+                this.$el.append(this.tempSlider);
+            }
+            // Save only the first touch. Ignore the rest.
+            var touches = this.getTouches(event);
+            var firstTouch = touches[0];
+            this.tempSliderStartX = firstTouch.pageX;
+            this.tempSliderStartY = firstTouch.pageY;
+            this.tempSliderX = firstTouch.pageX;
+            this.tempSliderY = firstTouch.pageY;
+            this.tempSliderAngle = 0;
+            this.tempSlider.css({
+                top: this.tempSliderY,
+                left: this.tempSliderX
+            });
+        },
+        setPadMove: function (event) {
+            if (this.readyForInteraction) {
+                // Don't set finger position if app is ready for use.
+                this.preventDefault(event);
+                return;
+            }
+            var touches = this.getTouches(event);
+            var firstTouch = touches[0];
+            this.tempSliderX = firstTouch.pageX;
+            this.tempSliderY = firstTouch.pageY;
+            // Determine the angle and length of the path drawn by this touch.
+            var xDist = this.tempSliderX - this.tempSliderStartX;
+            var yDist = this.tempSliderY - this.tempSliderStartY;
+            this.tempSliderAngle = Math.atan(xDist / yDist).toDegrees() * -1;
+            if (yDist < 0) {
+                // Tan only gives us -90 to +90, so we need to flip when moving
+                // upwards.
+                this.tempSliderAngle += 180;
+            }
+            // Style the temp slider to the path drawn.
+            var height = Math.sqrt(xDist.square() + yDist.square());
+            this.tempSlider.height(height);
+            vendorStyles(this.tempSlider, {transform: 'rotate(' + this.tempSliderAngle + 'deg)'});
+        },
+        setPadEnd: function (event) {
+            if (this.readyForInteraction) {
+                // Don't set finger position if app is ready for use.
+                this.preventDefault(event);
+                return;
+            }
+            // Reset the temp slider.
+            this.tempSlider.height(0);
+            vendorStyles(this.tempSlider, {transform: null});
+            // Position the finger.
+            var finger = this.fingers[this.currentFingerPositioningIndex++];
+            finger.model.set({
+                angle: this.tempSliderAngle,
+                top: this.tempSliderStartY,
+                left: this.tempSliderStartX
+            });
+            // Show the finger in its new position and rotation.
+            finger.trigger('customise:end').render();
+            if (this.currentFingerPositioningIndex >= this.fingers.length) {
+                // Clean-up so app is ready and can be used.
+                this.readyForInteraction = true;
+                this.isResetting = false;
+                this.checkReset();
+                // Remove the temp slider from the DOM.
+                this.tempSlider.remove();
+            }
+        },
         touchTracker: {},
         action: function (event) {
+            if (!this.readyForInteraction) {
+                // Don't select characters if the fingers aren't placed.
+                return;
+            }
             this.preventDefault(event);
             var method = event.type;
-            var touches = event.originalEvent.changedTouches;
+            var touches = this.getTouches(event);
             if (touches.length) {
                 _(touches).each(function (touch) {
                     var finger = this.getFingerViewFromTouch(touch, method, event);
@@ -393,8 +536,12 @@
             }
             return fingerView;
         },
-        preventDefault: function (event) {
+        preventDefault: function (event, stopPropagation) {
             event.preventDefault();
+            if (stopPropagation) {
+                // Stop event bubbling up.
+                event.stopPropagation();
+            }
         },
         hoverStart: function (event) {
             $(event.currentTarget).addClass('hover');
@@ -403,28 +550,28 @@
             $(event.currentTarget).removeClass('hover');
         },
         buttonActiveClass: 'active',
+        isResetting: false,
         reset: function (event) {
-            this.preventDefault(event);
+            // Stop event triggering another finger position immediately after
+            // finishing.
+            this.preventDefault(event, true);
+            // Reset app to not-ready state.
+            this.isResetting = true;
+            this.readyForInteraction = false;
+            this.currentFingerPositioningIndex = 0;
             this.hideWorking();
-            this.$position.removeClass(this.buttonActiveClass);
             _(this.fingers).each(function (finger) {
                 finger.trigger('customise:reset');
             });
+            this.checkReset();
         },
-        position: function (event) {
-            this.preventDefault(event);
-            this.hideWorking();
-            var trigger;
-            if (this.$position.hasClass(this.buttonActiveClass)) {
-                this.$position.removeClass(this.buttonActiveClass);
-                trigger = 'end';
+        checkReset: function () {
+            // Alter state of button.
+            if (this.isResetting) {
+                this.$reset.addClass(this.buttonActiveClass);
             } else {
-                this.$position.addClass(this.buttonActiveClass);
-                trigger = 'start';
+                this.$reset.removeClass(this.buttonActiveClass);
             }
-            _(this.fingers).each(function (finger) {
-                finger.trigger('customise:' + trigger);
-            });
         },
         peekClass: 'behind-the-scenes',
         toggleWorking: function (event) {
@@ -477,40 +624,40 @@
                 {id: 'backspace', title: '&larr;', value: null}
             ],
             angle: -60,
-            top: 400,
-            left: 110
+            top: 460,
+            left: 160
         },
         {
             id: 'second',
             step: defaultStep,
             charSet: 'abcdefg',
             angle: -10,
-            top: 220,
-            left: 270
+            top: 360,
+            left: 320
         },
         {
             id: 'third',
             step: defaultStep,
             charSet: 'hijklmn',
             angle: 0,
-            top: 200,
-            left: 410
+            top: 340,
+            left: 460
         },
         {
             id: 'fourth',
             step: defaultStep,
             charSet: 'opqrst',
             angle: 5,
-            top: 200,
-            left: 550
+            top: 320,
+            left: 600
         },
         {
             id: 'fifth',
             step: defaultStep,
             charSet: 'uvwxyz',
             angle: 30,
-            top: 270,
-            left: 680
+            top: 390,
+            left: 730
         }
     ];
 

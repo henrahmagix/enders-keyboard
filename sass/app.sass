@@ -46,6 +46,7 @@ body
     color: $textColor
     font-family: monospace
     margin: 0
+    +user-select(none)
 
 #app
     position: relative
@@ -76,6 +77,9 @@ body
 
 .finger
     position: absolute
+    display: none
+    &.is-positioned
+        display: block
 
 .pad
     border: 2px solid $fg
@@ -205,3 +209,9 @@ body
         height: 100%
     .behind-the-scenes &
         opacity: 1
+
+.temp-slider
+    background-color: $fg
+    position: absolute
+    width: $sliderWidth
+    +transform-origin(0, ($sliderWidth / 2))
