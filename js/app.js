@@ -770,6 +770,15 @@
         var app = new AppView({
             defaultData: defaultData
         }).render();
+
+        // Show the instructions when tapping the instructions button.
+        var $instructions = $('#instructions');
+        $(document).on('touchend', '.show-instructions', function (event) {
+            $instructions.show();
+        });
+        $(document).on('touchend', '#instructions .close', function (event) {
+            $instructions.hide();
+        });
     });
 
 })(window._, window.$, window.Backbone);

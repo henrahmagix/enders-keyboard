@@ -16,22 +16,22 @@ From top to bottom. The default character is the one the slider starts on. On th
 - **Space** (default)
 - **Backspace**
 
-#### Index
+#### Second
 
 - **a** to **g**
 - **c** is the default
 
-#### Middle
+#### Third
 
 - **h** to **n**
 - **j** is the default
 
-#### Ring
+#### Fourth
 
 - **o** to **t**
 - **q** is the default
 
-#### Pinky
+#### Fifth
 
 - **u** to **z**
 - **w** is the default

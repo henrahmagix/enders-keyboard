@@ -38,8 +38,10 @@ $animSpeed: 30ms
 
 html,
 body,
-#app
+#app,
+#instructions
     height: 100%
+    width: 100%
 
 body
     background-color: $bg
@@ -50,6 +52,37 @@ body
 
 #app
     position: relative
+
+#instructions
+    background-color: $bg
+    display: none
+    font-size: 22px
+    padding: $pad
+    overflow: auto
+    position: absolute
+    top: 0
+    left: 0
+
+    h1,
+    h2,
+    h3,
+    h4
+        font-weight: bold
+        margin: 30px 0
+    h1
+        font-size: 2em
+    h2
+        font-size: 1.5em
+    h3
+        font-size: 1.2em
+    h4
+        font-size: 1em
+
+    .close
+        position: absolute
+        top: $pad
+        right: $pad
+
 
 .display
     font-size: $inputCharSize
@@ -168,18 +201,27 @@ body
     &.hover
         background-color: $hoverbg
 
-    &.peek
-        font:
-            size: 12px
-        position: absolute
-        bottom: 0
-        right: $pad
+    &.peek,
+    &.close,
+    &.show-instructions
         height: auto
         min-width: 0
         width: auto
+
+    &.peek,
+    &.show-instructions
+        position: absolute
+    &.peek
+        font:
+            size: 12px
+        bottom: 0
+        right: $pad
         display: none
         .app-ready &
             display: block
+    &.show-instructions
+        bottom: $pad
+        left: $pad
 
 .text-inactive
     display: block
