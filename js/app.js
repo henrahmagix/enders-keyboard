@@ -412,9 +412,9 @@
         readyForInteraction: false,
         checkReadyState: function () {
             // Determine if any fingers need positioning.
-            var isReady = this.collection.every(function (model) {
-                return model.get('isPositioned');
-            });
+            var positionedFingers = this.collection.where({isPositioned: true});
+            this.currentFingerPositioningIndex = positionedFingers.length;
+            var isReady = positionedFingers.length === this.collection.length;
             this.readyForInteraction = isReady;
         },
         // Track the current finger index being positioned.
@@ -427,8 +427,8 @@
                 this.preventDefault(event);
                 return;
             }
-            if (this.currentFingerPositioningIndex === 0) {
-                // Add the temp slider for the first time.
+            if (!this.tempSlider.closest(this.$el).length) {
+                // Add the temp slider when it's not in the app.
                 this.$el.append(this.tempSlider);
             }
             // Save only the first touch. Ignore the rest.
