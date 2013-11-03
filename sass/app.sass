@@ -5,16 +5,20 @@ $white: hsl(65, 40, 90)
 $bg: $black
 $fg: $white
 $hoverbg: transparentize($fg, 0.7)
+$hoverText: $black
 $sliderbg: $fg
 $textColor: $fg
+$buttonBorder: $fg
 
 $fingerSize: 100px
 $fingerHeight: $fingerSize * 1.2
 $charSize: $fingerSize / 2
 $inputCharSize: $charSize / 1.5
 $pad: $fingerSize / 4
-
+$buttonHeight: 50px
+$buttonWidth: 250px
 $sliderWidth: 2px
+
 $animSpeed: 30ms
 
 @import compass/css3
@@ -40,20 +44,22 @@ body,
 body
     background-color: $bg
     color: $textColor
+    font-family: monospace
     margin: 0
-    padding: $pad
+    +user-select(none)
 
 #app
     position: relative
 
 .display
-    font:
-        family: monospace
-        size: $inputCharSize
+    font-size: $inputCharSize
     position: absolute
-    top: 0
-    left: 0
+    top: $pad
+    left: $pad
     white-space: pre
+    display: none
+    .app-ready &
+        display: block
 
     .cursor
         @include animation(blink 1s infinite)
@@ -74,6 +80,9 @@ body
 
 .finger
     position: absolute
+    display: none
+    &.is-positioned
+        display: block
 
 .pad
     border: 2px solid $fg
@@ -86,6 +95,36 @@ body
     left: 0
     .finger.hover &
         background-color: $hoverbg
+    .behind-the-scenes &,
+    .edit &
+        &:before,
+        &:after
+            content: ''
+            border: 1px solid $fg
+                radius: 100%
+            position: absolute
+            top: 50%
+            left: 50%
+            z-index: -1
+        &:before
+            // Outer circle.
+            $size: $fingerSize * 1.5
+            height: $size
+            width: $size
+            margin:
+                top: -($size / 2)
+                left: -($size / 2)
+        &:after
+            // Inner circle.
+            $size: $fingerSize / 4
+            height: $size
+            width: $size
+            margin:
+                top: -($size / 2)
+                left: -($size / 2)
+    // Hide the outer circle when peeking.
+    .behind-the-scenes &:before
+        display: none
 
 .slider
     margin: auto
@@ -95,8 +134,11 @@ body
     margin-left: -$sliderWidth / 2
     height: 100%
     width: $sliderWidth
+    .behind-the-scenes &,
     .finger.hover &
         background-color: $sliderbg
+    .finger.hover.edit &
+        background-color: transparent
 
 .char
     font-size: $charSize
@@ -104,13 +146,97 @@ body
     bottom: 100%
     left: 0
     margin-bottom: 5px
+    .edit &
+        display: none
+
+.button-wrapper
+    font-size: $inputCharSize
+    position: absolute
+    bottom: $pad
+    text-align: center
+    width: 100%
+
+.button
+    border: 1px solid $buttonBorder
+        radius: 3px
+    display: inline-block
+    line-height: 1
+    margin: 0 20px
+    padding: 5px 20px
+    height: $buttonHeight
+    min-width: $buttonWidth
+    &.hover
+        background-color: $hoverbg
+
+    &.peek
+        font:
+            size: 12px
+        position: absolute
+        bottom: 0
+        right: $pad
+        height: auto
+        min-width: 0
+        width: auto
+        display: none
+        .app-ready &
+            display: block
+
+.text-inactive
+    display: block
+    .active &
+        display: none
+.text-active
+    display: none
+    .active &
+        display: block
+
+.char-position
+    background-color: rgba($fg, 0.5)
+    color: $bg
+    font:
+        size: 1.4em
+        weight: bold
+    line-height: 1
+    opacity: 0
+    pointer-events: none
+    position: absolute
+    text-align: center
+    $size: 20px
+    height: $size
+    width: $size
+    margin:
+        top: -($size / 2)
+        left: -($size / 2) + ($sliderWidth / 2)
+    &,
+    &:before
+        display: inline-block
+        vertical-align: middle
+    &:before
+        content: ''
+        height: 100%
+    .behind-the-scenes &
+        opacity: 1
+
+.temp-slider
+    background-color: $fg
+    position: absolute
+    width: $sliderWidth
+    +transform-origin(0, ($sliderWidth / 2))
 
 .info
-    font-size: $fingerSize
-    opacity: 0.3
+    color: $fg
+    font:
+        size: 40px
+        weight: bold
+    opacity: 0.4
+    text-align: center
+    padding: $pad
     position: absolute
     top: 0
     right: 0
     bottom: 0
     left: 0
-    text-align: center
+    .app-ready &
+        display: none
+    p
+        margin: 0
