@@ -422,9 +422,6 @@
             'touchstart .js-touch-pad': 'action',
             'touchmove .js-touch-pad': 'action',
             'touchend .js-touch-pad': 'action',
-            // Add hover class when touching.
-            'touchstart .js-hover': 'hoverStart',
-            'touchend .js-hover': 'hoverEnd',
             // Button actions.
             'touchend .js-reset': 'reset',
             'touchend .js-peek': 'toggleWorking'
@@ -616,12 +613,6 @@
                 event.stopPropagation();
             }
         },
-        hoverStart: function (event) {
-            $(event.currentTarget).addClass('hover');
-        },
-        hoverEnd: function (event) {
-            $(event.currentTarget).removeClass('hover');
-        },
         buttonActiveClass: 'active',
         isResetting: false,
         reset: function (event) {
@@ -778,6 +769,14 @@
         });
         $(document).on('touchend', '#instructions .close', function (event) {
             $instructions.hide();
+        });
+
+        // Add hover class when touching things.
+        $(document).on('touchstart', '.js-hover', function (event) {
+            $(event.currentTarget).addClass('hover');
+        });
+        $(document).on('touchend', '.js-hover', function (event) {
+            $(event.currentTarget).removeClass('hover');
         });
     });
 
