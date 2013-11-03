@@ -16,7 +16,7 @@ $charSize: $fingerSize / 2
 $inputCharSize: $charSize / 1.5
 $pad: $fingerSize / 4
 $buttonHeight: 50px
-$buttonWidth: 250px
+$buttonWidth: 150px
 $sliderWidth: 2px
 
 $animSpeed: 30ms
@@ -77,6 +77,9 @@ body
         font-size: 1.2em
     h4
         font-size: 1em
+
+    strong
+        font-weight: normal
 
     .close
         position: absolute
@@ -183,7 +186,6 @@ body
         display: none
 
 .button-wrapper
-    font-size: $inputCharSize
     position: absolute
     bottom: $pad
     text-align: center
@@ -193,27 +195,20 @@ body
     border: 1px solid $buttonBorder
         radius: 3px
     display: inline-block
+    font-size: $inputCharSize
     line-height: 1
     margin: 0 20px
-    padding: 5px 20px
+    padding: 5px 10px
+    text-align: center
     height: $buttonHeight
     min-width: $buttonWidth
     &.hover
         background-color: $hoverbg
 
     &.peek,
-    &.close,
-    &.show-instructions
-        height: auto
-        min-width: 0
-        width: auto
-
-    &.peek,
     &.show-instructions
         position: absolute
     &.peek
-        font:
-            size: 12px
         bottom: 0
         right: $pad
         display: none
