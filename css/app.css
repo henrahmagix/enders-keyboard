@@ -99,8 +99,13 @@ body {
   top: 25px;
   left: 25px;
   white-space: pre;
+  display: none;
 }
 /* line 61, ../sass/app.sass */
+.app-ready .display {
+  display: block;
+}
+/* line 64, ../sass/app.sass */
 .display .cursor {
   -moz-animation: blink 1s infinite;
   -webkit-animation: blink 1s infinite;
@@ -112,14 +117,14 @@ body {
   vertical-align: top;
 }
 
-/* line 69, ../sass/app.sass */
+/* line 72, ../sass/app.sass */
 .finger,
 .pad {
   height: 120px;
   width: 100px;
 }
 
-/* line 74, ../sass/app.sass */
+/* line 77, ../sass/app.sass */
 .finger,
 .char {
   -moz-transform-origin: 50% 50%;
@@ -129,17 +134,17 @@ body {
   transform-origin: 50% 50%;
 }
 
-/* line 78, ../sass/app.sass */
+/* line 81, ../sass/app.sass */
 .finger {
   position: absolute;
   display: none;
 }
-/* line 81, ../sass/app.sass */
+/* line 84, ../sass/app.sass */
 .finger.is-positioned {
   display: block;
 }
 
-/* line 84, ../sass/app.sass */
+/* line 87, ../sass/app.sass */
 .pad {
   border: 2px solid #eef0db;
   border-radius: 100px;
@@ -149,11 +154,11 @@ body {
   top: 0;
   left: 0;
 }
-/* line 93, ../sass/app.sass */
+/* line 96, ../sass/app.sass */
 .finger.hover .pad {
   background-color: rgba(238, 240, 219, 0.3);
 }
-/* line 97, ../sass/app.sass */
+/* line 100, ../sass/app.sass */
 .behind-the-scenes .pad:before, .behind-the-scenes .pad:after, .edit .pad:before, .edit .pad:after {
   content: "";
   border: 1px solid #eef0db;
@@ -163,26 +168,26 @@ body {
   left: 50%;
   z-index: -1;
 }
-/* line 106, ../sass/app.sass */
+/* line 109, ../sass/app.sass */
 .behind-the-scenes .pad:before, .edit .pad:before {
   height: 150px;
   width: 150px;
   margin-top: -75px;
   margin-left: -75px;
 }
-/* line 114, ../sass/app.sass */
+/* line 117, ../sass/app.sass */
 .behind-the-scenes .pad:after, .edit .pad:after {
   height: 25px;
   width: 25px;
   margin-top: -12.5px;
   margin-left: -12.5px;
 }
-/* line 123, ../sass/app.sass */
+/* line 126, ../sass/app.sass */
 .behind-the-scenes .pad:before {
   display: none;
 }
 
-/* line 126, ../sass/app.sass */
+/* line 129, ../sass/app.sass */
 .slider {
   margin: auto;
   position: absolute;
@@ -192,16 +197,16 @@ body {
   height: 100%;
   width: 2px;
 }
-/* line 134, ../sass/app.sass */
+/* line 137, ../sass/app.sass */
 .behind-the-scenes .slider, .finger.hover .slider {
   background-color: #eef0db;
 }
-/* line 137, ../sass/app.sass */
+/* line 140, ../sass/app.sass */
 .finger.hover.edit .slider {
   background-color: transparent;
 }
 
-/* line 140, ../sass/app.sass */
+/* line 143, ../sass/app.sass */
 .char {
   font-size: 50px;
   position: absolute;
@@ -209,12 +214,12 @@ body {
   left: 0;
   margin-bottom: 5px;
 }
-/* line 146, ../sass/app.sass */
+/* line 149, ../sass/app.sass */
 .edit .char {
   display: none;
 }
 
-/* line 149, ../sass/app.sass */
+/* line 152, ../sass/app.sass */
 .button-wrapper {
   font-size: 33.33333px;
   position: absolute;
@@ -223,50 +228,56 @@ body {
   width: 100%;
 }
 
-/* line 156, ../sass/app.sass */
+/* line 159, ../sass/app.sass */
 .button {
   border: 1px solid #eef0db;
   border-radius: 3px;
   display: inline-block;
   line-height: 1;
   margin: 0 20px;
-  padding: 5px;
+  padding: 5px 20px;
   height: 50px;
-  width: 250px;
+  min-width: 250px;
 }
-/* line 165, ../sass/app.sass */
+/* line 168, ../sass/app.sass */
 .button.hover {
   background-color: rgba(238, 240, 219, 0.3);
 }
-/* line 168, ../sass/app.sass */
+/* line 171, ../sass/app.sass */
 .button.peek {
   font-size: 12px;
   position: absolute;
-  bottom: 25px;
+  bottom: 0;
   right: 25px;
   height: auto;
+  min-width: 0;
   width: auto;
+  display: none;
+}
+/* line 181, ../sass/app.sass */
+.app-ready .button.peek {
+  display: block;
 }
 
-/* line 177, ../sass/app.sass */
+/* line 184, ../sass/app.sass */
 .text-inactive {
   display: block;
 }
-/* line 179, ../sass/app.sass */
+/* line 186, ../sass/app.sass */
 .active .text-inactive {
   display: none;
 }
 
-/* line 181, ../sass/app.sass */
+/* line 188, ../sass/app.sass */
 .text-active {
   display: none;
 }
-/* line 183, ../sass/app.sass */
+/* line 190, ../sass/app.sass */
 .active .text-active {
   display: block;
 }
 
-/* line 186, ../sass/app.sass */
+/* line 193, ../sass/app.sass */
 .char-position {
   background-color: rgba(238, 240, 219, 0.5);
   color: #1a1a1a;
@@ -282,22 +293,22 @@ body {
   margin-top: -10px;
   margin-left: -9px;
 }
-/* line 203, ../sass/app.sass */
+/* line 210, ../sass/app.sass */
 .char-position, .char-position:before {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 207, ../sass/app.sass */
+/* line 214, ../sass/app.sass */
 .char-position:before {
   content: "";
   height: 100%;
 }
-/* line 210, ../sass/app.sass */
+/* line 217, ../sass/app.sass */
 .behind-the-scenes .char-position {
   opacity: 1;
 }
 
-/* line 213, ../sass/app.sass */
+/* line 220, ../sass/app.sass */
 .temp-slider {
   background-color: #eef0db;
   position: absolute;
@@ -307,4 +318,27 @@ body {
   -o-transform-origin: 0 1px;
   -webkit-transform-origin: 0 1px;
   transform-origin: 0 1px;
+}
+
+/* line 226, ../sass/app.sass */
+.info {
+  color: #eef0db;
+  font-size: 40px;
+  font-weight: bold;
+  opacity: 0.4;
+  text-align: center;
+  padding: 25px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+/* line 239, ../sass/app.sass */
+.app-ready .info {
+  display: none;
+}
+/* line 241, ../sass/app.sass */
+.info p {
+  margin: 0;
 }

@@ -57,6 +57,9 @@ body
     top: $pad
     left: $pad
     white-space: pre
+    display: none
+    .app-ready &
+        display: block
 
     .cursor
         @include animation(blink 1s infinite)
@@ -159,9 +162,9 @@ body
     display: inline-block
     line-height: 1
     margin: 0 20px
-    padding: 5px
+    padding: 5px 20px
     height: $buttonHeight
-    width: $buttonWidth
+    min-width: $buttonWidth
     &.hover
         background-color: $hoverbg
 
@@ -169,10 +172,14 @@ body
         font:
             size: 12px
         position: absolute
-        bottom: $pad
+        bottom: 0
         right: $pad
         height: auto
+        min-width: 0
         width: auto
+        display: none
+        .app-ready &
+            display: block
 
 .text-inactive
     display: block
@@ -215,3 +222,21 @@ body
     position: absolute
     width: $sliderWidth
     +transform-origin(0, ($sliderWidth / 2))
+
+.info
+    color: $fg
+    font:
+        size: 40px
+        weight: bold
+    opacity: 0.4
+    text-align: center
+    padding: $pad
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    .app-ready &
+        display: none
+    p
+        margin: 0

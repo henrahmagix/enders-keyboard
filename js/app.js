@@ -406,6 +406,10 @@
             '<div class="display">' +
                 '<span class="content"></span>' +
                 '<span class="cursor"></span>' +
+            '</div>' +
+            '<div class="info">' +
+                'please place <span class="finger-to-place"></span>' +
+                '<p>drag to set position and rotation</p>' +
             '</div>',
         events: {
             // Stop window from being moved.
@@ -426,8 +430,8 @@
             'touchend .js-peek': 'toggleWorking'
         },
         listen: {
-            'load': 'loadData',
-            'save': 'saveData'
+            'loadData': 'loadData',
+            'saveData': 'saveData'
         },
         initialize: function () {
             View.prototype.initialize.apply(this, arguments);
@@ -435,19 +439,20 @@
             // Ensure data persists and app ready state is setup.
             this.listenTo(this.collection, 'change', this.saveData);
             this.listenTo(this.collection, 'change reset', this.checkReadyState);
-            // Start the loading of the app.
-            this.trigger('load');
         },
         onReady: function () {
             // Cache $ selectors.
             this.$input = this.$('.display .content');
             this.$reset = this.$('.reset');
             this.$peek = this.$('.peek');
+            this.$fingerToPlace = this.$('.finger-to-place');
+            // Start the loading of the app.
+            this.trigger('loadData');
             // Add finger views.
             this.fingers = [];
             this.collection.each(this.addFinger, this);
             // Ensure data is saved after finger views are setup.
-            this.trigger('save');
+            this.trigger('saveData');
         },
         addFinger: function (finger) {
             // Add a view for this finger and store it on this object.
@@ -470,12 +475,20 @@
             return event.originalEvent.changedTouches;
         },
         readyForInteraction: false,
+        readyClass: 'app-ready',
         checkReadyState: function () {
             // Determine if any fingers need positioning.
             var positionedFingers = this.collection.where({isPositioned: true});
             this.currentFingerPositioningIndex = positionedFingers.length;
             var isReady = positionedFingers.length === this.collection.length;
             this.readyForInteraction = isReady;
+            if (isReady) {
+                this.$el.addClass(this.readyClass);
+                this.$fingerToPlace.text('');
+            } else {
+                this.$el.removeClass(this.readyClass);
+                this.$fingerToPlace.text(this.collection.at(this.currentFingerPositioningIndex).id);
+            }
         },
         // Track the current finger index being positioned.
         currentFingerPositioningIndex: 0,
@@ -619,6 +632,7 @@
             this.isResetting = true;
             this.readyForInteraction = false;
             this.currentFingerPositioningIndex = 0;
+            this.$el.removeClass(this.readyClass);
             this.hideWorking();
             _(this.fingers).each(function (finger) {
                 finger.trigger('customise:reset');
