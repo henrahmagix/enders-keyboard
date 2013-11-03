@@ -46,7 +46,6 @@ body
     color: $textColor
     font-family: monospace
     margin: 0
-    padding: $pad
 
 #app
     position: relative
@@ -54,8 +53,8 @@ body
 .display
     font-size: $inputCharSize
     position: absolute
-    top: 0
-    left: 0
+    top: $pad
+    left: $pad
     white-space: pre
 
     .cursor
@@ -146,7 +145,7 @@ body
 .button-wrapper
     font-size: $inputCharSize
     position: absolute
-    bottom: 0
+    bottom: $pad
     text-align: center
     width: 100%
 
@@ -166,8 +165,8 @@ body
         font:
             size: 12px
         position: absolute
-        bottom: 0
-        right: 0
+        bottom: $pad
+        right: $pad
         height: auto
         width: auto
 
