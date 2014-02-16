@@ -291,6 +291,16 @@
             this.startX = touch.pageX;
             this.startY = touch.pageY;
             this.updateCoords(touch);
+            this.setElasticatedDimension();
+        },
+        setElasticatedDimension: function () {
+            var a = (90 + this.model.get('angle')) % 180;
+            var isVert = a > 45 && a < 135;
+            if (isVert) {
+                this.elasticDimension = $(document.body).height();
+            } else {
+                this.elasticDimension = $(document.body).width();
+            }
         },
         updateCoords: function (touch) {
             // Update position.
@@ -319,13 +329,14 @@
             // Get the straight-line distance between the coordinates.
             var verticalDistance = this.getVerticalDistance();
             // Increment/decrement distance and top value.
-            this.top = this.initialTop + verticalDistance;
+            var newTop = this.initialTop + verticalDistance;
             // Alter position if out of bounds.
-            if (this.top < 0) {
-                this.top = 0;
-            } else if (this.top > this.sliderLength) {
-                this.top = this.sliderLength;
+            if (newTop < 0) {
+                newTop = 0 - this.getElasticDistance(Math.abs(newTop));
+            } else if (newTop > this.sliderLength) {
+                newTop = this.sliderLength + this.getElasticDistance(newTop - this.sliderLength);
             }
+            this.top = newTop;
             // Move pad to new position.
             this.$pad.css('top', this.top);
             // If there's a new character to be selected, select it.
@@ -333,6 +344,20 @@
             if (newChar !== this.getSelected()) {
                 newChar.set('selected', true);
             }
+        },
+        getElasticDistance: function (distance) {
+            // Use Apple's formula for rubber band scrolling:
+            // b = (1.0 – (1.0 / ((x * c / d) + 1.0))) * d
+            // where x is the distance from the edge, c is a constant (Apple
+            // uses 0.55), and d is a dimension of the rubber banding item.
+            // Here, the dimension is the window width or height, depending on
+            // the angle of the slider (see setElasticatedDimension). A constant
+            // of 1 allows full movement, whereas 0 stops all movement.
+            // See http://squareb.wordpress.com/2013/01/06/31/
+            var x = distance;
+            var d = this.elasticDimension;
+            var c = 0.3;
+            return (1.0 - (1.0 / ((x * c / d) + 1.0))) * d;
         },
         touchend: function () {
             this.$el.removeClass('hover');
