@@ -774,6 +774,16 @@
         $(document).on('touchend', '.js-hover', function (event) {
             $(event.currentTarget).removeClass('hover');
         });
+
+        // Cancel touchmove events on the body to stop webviews from bouncing
+        // (Webkit only).
+        $(document).on('touchmove', 'body', function (event) {
+            if ($(event.target).closest('.js-scroll').length === 0) {
+                // Only cancel touchmove events when not inside an element that
+                // must be allowed to be scrolled.
+                event.preventDefault();
+            }
+        });
     });
 
 })(window._, window.$, window.Backbone);

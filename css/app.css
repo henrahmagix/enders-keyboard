@@ -101,11 +101,12 @@ body {
   font-size: 22px;
   padding: 25px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   position: absolute;
   top: 0;
   left: 0;
 }
-/* line 66, ../sass/app.sass */
+/* line 67, ../sass/app.sass */
 #instructions h1,
 #instructions h2,
 #instructions h3,
@@ -113,34 +114,34 @@ body {
   font-weight: bold;
   margin: 30px 0;
 }
-/* line 72, ../sass/app.sass */
+/* line 73, ../sass/app.sass */
 #instructions h1 {
   font-size: 2em;
 }
-/* line 74, ../sass/app.sass */
+/* line 75, ../sass/app.sass */
 #instructions h2 {
   font-size: 1.5em;
 }
-/* line 76, ../sass/app.sass */
+/* line 77, ../sass/app.sass */
 #instructions h3 {
   font-size: 1.2em;
 }
-/* line 78, ../sass/app.sass */
+/* line 79, ../sass/app.sass */
 #instructions h4 {
   font-size: 1em;
 }
-/* line 81, ../sass/app.sass */
+/* line 82, ../sass/app.sass */
 #instructions strong {
   font-weight: normal;
 }
-/* line 84, ../sass/app.sass */
+/* line 85, ../sass/app.sass */
 #instructions .close {
   position: absolute;
   top: 25px;
   right: 25px;
 }
 
-/* line 90, ../sass/app.sass */
+/* line 91, ../sass/app.sass */
 .display {
   font-size: 33.33333px;
   position: absolute;
@@ -149,11 +150,11 @@ body {
   white-space: pre;
   display: none;
 }
-/* line 97, ../sass/app.sass */
+/* line 98, ../sass/app.sass */
 .app-ready .display {
   display: block;
 }
-/* line 100, ../sass/app.sass */
+/* line 101, ../sass/app.sass */
 .display .cursor {
   -moz-animation: blink 1s infinite;
   -webkit-animation: blink 1s infinite;
@@ -165,14 +166,14 @@ body {
   vertical-align: top;
 }
 
-/* line 108, ../sass/app.sass */
+/* line 109, ../sass/app.sass */
 .finger,
 .pad {
   height: 120px;
   width: 100px;
 }
 
-/* line 113, ../sass/app.sass */
+/* line 114, ../sass/app.sass */
 .finger,
 .char {
   -moz-transform-origin: 50% 50%;
@@ -182,17 +183,17 @@ body {
   transform-origin: 50% 50%;
 }
 
-/* line 117, ../sass/app.sass */
+/* line 118, ../sass/app.sass */
 .finger {
   position: absolute;
   display: none;
 }
-/* line 120, ../sass/app.sass */
+/* line 121, ../sass/app.sass */
 .finger.is-positioned {
   display: block;
 }
 
-/* line 123, ../sass/app.sass */
+/* line 124, ../sass/app.sass */
 .pad {
   border: 2px solid #eef0db;
   border-radius: 100px;
@@ -202,11 +203,11 @@ body {
   top: 0;
   left: 0;
 }
-/* line 132, ../sass/app.sass */
+/* line 133, ../sass/app.sass */
 .finger.hover .pad {
   background-color: rgba(238, 240, 219, 0.3);
 }
-/* line 136, ../sass/app.sass */
+/* line 137, ../sass/app.sass */
 .behind-the-scenes .pad:before, .behind-the-scenes .pad:after, .edit .pad:before, .edit .pad:after {
   content: "";
   border: 1px solid #eef0db;
@@ -216,26 +217,26 @@ body {
   left: 50%;
   z-index: -1;
 }
-/* line 145, ../sass/app.sass */
+/* line 146, ../sass/app.sass */
 .behind-the-scenes .pad:before, .edit .pad:before {
   height: 150px;
   width: 150px;
   margin-top: -75px;
   margin-left: -75px;
 }
-/* line 153, ../sass/app.sass */
+/* line 154, ../sass/app.sass */
 .behind-the-scenes .pad:after, .edit .pad:after {
   height: 25px;
   width: 25px;
   margin-top: -12.5px;
   margin-left: -12.5px;
 }
-/* line 162, ../sass/app.sass */
+/* line 163, ../sass/app.sass */
 .behind-the-scenes .pad:before {
   display: none;
 }
 
-/* line 165, ../sass/app.sass */
+/* line 166, ../sass/app.sass */
 .slider {
   margin: auto;
   position: absolute;
@@ -245,16 +246,16 @@ body {
   height: 100%;
   width: 2px;
 }
-/* line 173, ../sass/app.sass */
+/* line 174, ../sass/app.sass */
 .behind-the-scenes .slider, .finger.hover .slider {
   background-color: #eef0db;
 }
-/* line 176, ../sass/app.sass */
+/* line 177, ../sass/app.sass */
 .finger.hover.edit .slider {
   background-color: transparent;
 }
 
-/* line 179, ../sass/app.sass */
+/* line 180, ../sass/app.sass */
 .char {
   font-size: 50px;
   position: absolute;
@@ -263,12 +264,12 @@ body {
   margin-bottom: 5px;
   display: none;
 }
-/* line 186, ../sass/app.sass */
+/* line 187, ../sass/app.sass */
 .behind-the-scenes .char {
   display: block;
 }
 
-/* line 189, ../sass/app.sass */
+/* line 190, ../sass/app.sass */
 .button-wrapper {
   position: absolute;
   bottom: 25px;
@@ -276,7 +277,7 @@ body {
   width: 100%;
 }
 
-/* line 195, ../sass/app.sass */
+/* line 196, ../sass/app.sass */
 .button {
   border: 1px solid #eef0db;
   border-radius: 3px;
@@ -289,49 +290,49 @@ body {
   height: 50px;
   min-width: 150px;
 }
-/* line 206, ../sass/app.sass */
+/* line 207, ../sass/app.sass */
 .button.hover {
   background-color: rgba(238, 240, 219, 0.3);
 }
-/* line 209, ../sass/app.sass */
+/* line 210, ../sass/app.sass */
 .button.peek, .button.show-instructions {
   position: absolute;
 }
-/* line 212, ../sass/app.sass */
+/* line 213, ../sass/app.sass */
 .button.peek {
   bottom: 0;
   right: 25px;
   display: none;
 }
-/* line 216, ../sass/app.sass */
+/* line 217, ../sass/app.sass */
 .app-ready .button.peek {
   display: block;
 }
-/* line 218, ../sass/app.sass */
+/* line 219, ../sass/app.sass */
 .button.show-instructions {
   bottom: 25px;
   left: 25px;
 }
 
-/* line 222, ../sass/app.sass */
+/* line 223, ../sass/app.sass */
 .text-inactive {
   display: block;
 }
-/* line 224, ../sass/app.sass */
+/* line 225, ../sass/app.sass */
 .active .text-inactive {
   display: none;
 }
 
-/* line 226, ../sass/app.sass */
+/* line 227, ../sass/app.sass */
 .text-active {
   display: none;
 }
-/* line 228, ../sass/app.sass */
+/* line 229, ../sass/app.sass */
 .active .text-active {
   display: block;
 }
 
-/* line 231, ../sass/app.sass */
+/* line 232, ../sass/app.sass */
 .char-position {
   background-color: rgba(238, 240, 219, 0.5);
   color: #1a1a1a;
@@ -347,22 +348,22 @@ body {
   margin-top: -10px;
   margin-left: -9px;
 }
-/* line 248, ../sass/app.sass */
+/* line 249, ../sass/app.sass */
 .char-position, .char-position:before {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 252, ../sass/app.sass */
+/* line 253, ../sass/app.sass */
 .char-position:before {
   content: "";
   height: 100%;
 }
-/* line 255, ../sass/app.sass */
+/* line 256, ../sass/app.sass */
 .behind-the-scenes .char-position {
   opacity: 1;
 }
 
-/* line 258, ../sass/app.sass */
+/* line 259, ../sass/app.sass */
 .temp-slider {
   background-color: #eef0db;
   position: absolute;
@@ -374,7 +375,7 @@ body {
   transform-origin: 0 1px;
 }
 
-/* line 264, ../sass/app.sass */
+/* line 265, ../sass/app.sass */
 .info {
   color: #eef0db;
   font-size: 40px;
@@ -389,11 +390,11 @@ body {
   left: 0;
   z-index: -1;
 }
-/* line 278, ../sass/app.sass */
+/* line 279, ../sass/app.sass */
 .app-ready .info {
   display: none;
 }
-/* line 280, ../sass/app.sass */
+/* line 281, ../sass/app.sass */
 .info p {
   margin: 0;
 }
