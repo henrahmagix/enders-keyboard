@@ -249,9 +249,9 @@
             this.on('customise:reset', this.customReset);
             // Set the slider height based on number of characters in this set.
             var step = this.model.get('step');
-            var charSetHeight = step * this.chars.length;
-            this.$slider.height(charSetHeight);
-            this.$el.height(charSetHeight);
+            this.sliderLength = step * this.chars.length;
+            this.$slider.height(this.sliderLength);
+            this.$el.height(this.sliderLength);
             // Position the slider based on the initial character.
             this.initialTop = this.getTop(this.getInitial());
             this.reset();
@@ -320,6 +320,12 @@
             var verticalDistance = this.getVerticalDistance();
             // Increment/decrement distance and top value.
             this.top = this.initialTop + verticalDistance;
+            // Alter position if out of bounds.
+            if (this.top < 0) {
+                this.top = 0;
+            } else if (this.top > this.sliderLength) {
+                this.top = this.sliderLength;
+            }
             // Move pad to new position.
             this.$pad.css('top', this.top);
             // If there's a new character to be selected, select it.
