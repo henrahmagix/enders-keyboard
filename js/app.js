@@ -277,9 +277,11 @@
         },
         checkIfPositioned: function () {
             // Set class based on positioned state of finger.
-            if (this.model.get('isPositioned') && !this.$el.hasClass('is-positioned')) {
+            var modelIsPositioned = this.model.get('isPositioned');
+            var elementIsPositioned = this.$el.hasClass('is-positioned');
+            if (modelIsPositioned && !elementIsPositioned) {
                 this.$el.addClass('is-positioned');
-            } else if (!this.model.get('isPositioned') && this.$el.hasClass('is-positioned')) {
+            } else if (!modelIsPositioned && elementIsPositioned) {
                 this.$el.removeClass('is-positioned');
             }
         },
