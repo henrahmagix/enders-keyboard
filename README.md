@@ -1,14 +1,16 @@
 # Ender's Keyboard
 
-The one-handed keyboard used by Ender in Ender's Game the movie.
+The one-handed touch screen keyboard used by Ender in Ender's Game the movie.
 
 ## Instructions
 
-Touch to start character selection. Slide along the axis to select a character. Release to type the character. Thus a quick tap will type the default character.
+Touch to start character selection. Slide along the axis to select a character. Release to type the character (a quick tap will type the default character.)
 
 ### Character sets
 
 From top to bottom. The default character is the one the slider starts on. On the fingers you can slide up two characters and down for the rest.
+
+Tap peek to see the characters.
 
 #### Thumb
 
@@ -19,22 +21,22 @@ From top to bottom. The default character is the one the slider starts on. On th
 #### Second
 
 - **a** to **g**
-- **c** is the default
+- default: **c**
 
 #### Third
 
 - **h** to **n**
-- **j** is the default
+- default: **j**
 
 #### Fourth
 
 - **o** to **t**
-- **q** is the default
+- default: **q**
 
 #### Fifth
 
 - **u** to **z**
-- **w** is the default
+- default: **w**
 
 ## Improvements
 
